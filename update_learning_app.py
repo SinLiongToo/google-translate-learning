@@ -575,20 +575,20 @@ def generate_interactive_html(items):
       </div>
 
       <!-- 視角切換器 (4 大檢視模式) -->
-      <div class="flex items-center bg-slate-200/80 dark:bg-slate-900/90 p-1 rounded-xl border border-slate-300 dark:border-slate-700/60 shadow-inner">
-        <button id="tab-flashcard" onclick="switchTab('flashcard')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-emerald-600 dark:bg-emerald-500 text-white shadow-md">
+      <div class="flex items-center bg-slate-200/80 dark:bg-slate-900/90 p-1 rounded-xl border border-slate-300 dark:border-slate-700/60 shadow-inner max-w-full overflow-x-auto no-scrollbar">
+        <button id="tab-flashcard" onclick="switchTab('flashcard')" class="tab-btn px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 bg-emerald-600 dark:bg-emerald-500 text-white shadow-md">
           <span>📇</span> 3D 卡牌
         </button>
-        <button id="tab-list" onclick="switchTab('list')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
+        <button id="tab-list" onclick="switchTab('list')" class="tab-btn px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
           <span>📋</span> 詞庫清單
         </button>
-        <button id="tab-quiz" onclick="switchTab('quiz')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
+        <button id="tab-quiz" onclick="switchTab('quiz')" class="tab-btn px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
           <span>✍️</span> 自我測驗
         </button>
-        <button id="tab-graph" onclick="switchTab('graph')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
+        <button id="tab-graph" onclick="switchTab('graph')" class="tab-btn px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
           <span>🕸️</span> 關係圖譜
         </button>
-        <button id="tab-help" onclick="switchTab('help')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
+        <button id="tab-help" onclick="switchTab('help')" class="tab-btn px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
           <span>📖</span> 使用說明
         </button>
       </div>
@@ -783,29 +783,29 @@ def generate_interactive_html(items):
         </div>
       </div>
 
-      <!-- 下方控制按鈕區 -->
-      <div class="max-w-2xl mx-auto flex flex-wrap items-center justify-between gap-4 pt-2">
-        <button onclick="prevCard()" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-medium border border-slate-300 dark:border-slate-700 transition flex items-center gap-2">
-          <span>←</span> 上一張
-        </button>
-
+      <!-- 下方控制按鈕區 (手機版響應式人體工學排版) -->
+      <div class="max-w-2xl mx-auto space-y-3 pt-2">
         <!-- 掌握度快速標記按鈕 (1, 2, 3) -->
-        <div class="flex items-center gap-2">
-          <button onclick="setMastery('unlearned')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-500/20 hover:bg-rose-500/30 text-rose-700 dark:text-rose-300 border border-rose-500/30 transition flex items-center gap-1" title="快速鍵: 1">
+        <div class="grid grid-cols-3 gap-2 w-full">
+          <button onclick="setMastery('unlearned')" class="py-2 px-1 rounded-xl text-xs font-semibold bg-rose-500/20 hover:bg-rose-500/30 text-rose-700 dark:text-rose-300 border border-rose-500/30 transition flex items-center justify-center gap-1" title="快速鍵: 1">
             🔴 困難 (1)
           </button>
-          <button onclick="setMastery('learning')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 border border-amber-500/30 transition flex items-center gap-1" title="快速鍵: 2">
+          <button onclick="setMastery('learning')" class="py-2 px-1 rounded-xl text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 border border-amber-500/30 transition flex items-center justify-center gap-1" title="快速鍵: 2">
             🟡 學習中 (2)
           </button>
-          <button onclick="setMastery('mastered')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition flex items-center gap-1" title="快速鍵: 3">
+          <button onclick="setMastery('mastered')" class="py-2 px-1 rounded-xl text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition flex items-center justify-center gap-1" title="快速鍵: 3">
             🟢 已掌握 (3)
           </button>
         </div>
 
-        <!-- 下一張與自動播放按鈕組 -->
-        <div class="flex items-center flex-wrap gap-2">
+        <!-- 導航切換、播報模式與自動播放控制列 -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5">
+          <button onclick="prevCard()" class="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-medium border border-slate-300 dark:border-slate-700 transition flex items-center justify-center gap-1.5">
+            <span>←</span> 上一張
+          </button>
+
           <!-- 播放模式切換：雙語模式 vs 英文模式 -->
-          <div class="flex items-center text-xs bg-slate-200/80 dark:bg-slate-800/80 rounded-xl p-1 border border-slate-300 dark:border-slate-700/60 shadow-inner">
+          <div class="flex items-center text-xs bg-slate-200/80 dark:bg-slate-800/80 rounded-xl p-1 border border-slate-300 dark:border-slate-700/60 shadow-inner order-last sm:order-none w-full sm:w-auto justify-center">
             <span class="pl-2 pr-1 text-slate-500 dark:text-slate-400 font-medium">播報:</span>
             <select id="autoplay-mode-select" onchange="setAutoPlayMode(this.value)" class="bg-transparent text-slate-700 dark:text-slate-200 font-bold focus:outline-none cursor-pointer py-1.5 pr-2">
               <option value="bilingual">🌐 雙語模式 (外語+中文)</option>
@@ -813,10 +813,11 @@ def generate_interactive_html(items):
             </select>
           </div>
 
-          <button onclick="nextCard()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
+          <button onclick="nextCard()" class="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-1.5">
             下一張 <span>→</span>
           </button>
-          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5" title="自動巡迴播放：依據選擇模式自動朗讀與切換 (快捷鍵: A)">
+
+          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-1.5" title="自動巡迴播放：依據選擇模式自動朗讀與切換 (快捷鍵: A)">
             <span id="autoplay-icon">▶</span>
             <span id="autoplay-text">自動播放</span>
           </button>
@@ -1488,10 +1489,10 @@ git push</pre>
         const btn = document.getElementById('tab-' + id);
         const view = document.getElementById('view-' + id);
         if (id === tabId) {{
-          btn.className = "tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 bg-emerald-600 dark:bg-emerald-500 text-white shadow-md";
+          btn.className = "tab-btn px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 bg-emerald-600 dark:bg-emerald-500 text-white shadow-md";
           view.classList.remove('hidden');
         }} else {{
-          btn.className = "tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800";
+          btn.className = "tab-btn px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800";
           view.classList.add('hidden');
         }}
       }});
@@ -1585,7 +1586,7 @@ git push</pre>
       // 動態自適應字級演算法 (防止長文或多行列表破版超出卡牌)
       const frontText = card.front || "";
       const frontLen = frontText.length;
-      const frontLines = frontText.split('\n').length;
+      const frontLines = frontText.split(String.fromCharCode(10)).length;
       const frontEl = document.getElementById('fc-front-text');
       frontEl.innerText = frontText;
 
@@ -1602,7 +1603,7 @@ git push</pre>
       // 背面文字同樣進行自適應縮放
       const backText = card.back || "";
       const backLen = backText.length;
-      const backLines = backText.split('\n').length;
+      const backLines = backText.split(String.fromCharCode(10)).length;
       const backEl = document.getElementById('fc-back-text');
       backEl.innerText = backText;
 
