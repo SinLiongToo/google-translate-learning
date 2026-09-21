@@ -292,13 +292,13 @@
         <div id="fc-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300" style="width: 1%;"></div>
       </div>
 
-      <!-- 3D 翻轉卡片本體 (極速響應) -->
-      <div class="max-w-2xl mx-auto h-[390px] perspective-1000 cursor-pointer select-none" onclick="flipCard()">
+      <!-- 3D 翻轉卡片本體 (自適應高寬與捲動保護) -->
+      <div class="max-w-2xl mx-auto min-h-[400px] h-[430px] sm:h-[410px] perspective-1000 cursor-pointer select-none" onclick="flipCard()">
         <div id="card-inner" class="relative w-full h-full transform-style-3d shadow-xl rounded-2xl">
           
           <!-- 卡牌正面 (原文面) -->
-          <div class="absolute inset-0 w-full h-full rounded-2xl p-8 flex flex-col justify-between backface-hidden bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/60 shadow-lg">
-            <div class="flex items-center justify-between">
+          <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/60 shadow-lg overflow-hidden">
+            <div class="flex items-center justify-between shrink-0">
               <div class="flex items-center gap-2 field-tag">
                 <!-- 語言對標籤 (清晰辨別法語/英語) -->
                 <span id="fc-lang-badge" class="px-2.5 py-1 text-xs rounded-md font-bold border shadow-sm">
@@ -316,29 +316,31 @@
               </button>
             </div>
 
-            <!-- 正面文字內容 -->
-            <div class="text-center my-auto px-4">
-              <div id="fc-front-lang-hint" class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">
+            <!-- 正面文字內容：自適應滾動保護與動態字級 -->
+            <div class="my-auto px-2 overflow-y-auto max-h-[250px] w-full flex flex-col items-center justify-center">
+              <div id="fc-front-lang-hint" class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 shrink-0">
                 [🇫🇷 法文原文]
               </div>
-              <h2 id="fc-front-text" class="field-en text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight break-words leading-snug">
-                donner de la confiture aux cochons
-              </h2>
-              <div id="fc-hint" class="text-xs text-slate-400 mt-4">
+              <div class="w-full flex justify-center">
+                <h2 id="fc-front-text" class="field-en tracking-tight break-words whitespace-pre-line transition-all">
+                  donner de la confiture aux cochons
+                </h2>
+              </div>
+              <div id="fc-hint" class="text-xs text-slate-400 mt-3 shrink-0">
                 （點擊卡牌或按空格鍵翻轉查看釋義）
               </div>
             </div>
 
             <!-- 底部提示 -->
-            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3 shrink-0">
               <span>快捷鍵：Space 翻牌 | ← → 切換卡片</span>
               <span id="fc-mastery-tag" class="text-amber-500 dark:text-amber-400 font-semibold">🟡 學習中</span>
             </div>
           </div>
 
           <!-- 卡牌背面 (釋義與說明面) -->
-          <div class="absolute inset-0 w-full h-full rounded-2xl p-8 flex flex-col justify-between backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-900/95 border border-emerald-500/40 shadow-lg">
-            <div class="flex items-center justify-between">
+          <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-900/95 border border-emerald-500/40 shadow-lg overflow-hidden">
+            <div class="flex items-center justify-between shrink-0">
               <span id="fc-back-lang-hint" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
                 [🇬🇧 英文釋義]
               </span>
@@ -348,18 +350,20 @@
             </div>
 
             <!-- 背面中文/英文/法文釋義與例句內容 -->
-            <div class="my-auto px-2 overflow-y-auto max-h-[220px]">
-              <h3 id="fc-back-text" class="field-zh text-2xl sm:text-3xl font-bold text-emerald-700 dark:text-emerald-300 leading-relaxed">
-                give jam to the pigs.
-              </h3>
-              <div id="fc-notes-container" class="field-notes mt-4 p-3.5 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 text-sm text-slate-700 dark:text-slate-300 shadow-sm">
-                <p id="fc-notes" class="leading-relaxed">
+            <div class="my-auto px-2 overflow-y-auto max-h-[250px] w-full">
+              <div class="w-full flex justify-center">
+                <h3 id="fc-back-text" class="field-zh text-emerald-700 dark:text-emerald-300 leading-relaxed break-words whitespace-pre-line transition-all">
+                  give jam to the pigs.
+                </h3>
+              </div>
+              <div id="fc-notes-container" class="field-notes mt-3 p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 text-xs text-slate-700 dark:text-slate-300 shadow-sm text-left">
+                <p id="fc-notes" class="leading-relaxed whitespace-pre-line">
                   備註與例句解析
                 </p>
               </div>
             </div>
 
-            <div class="text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3">
+            <div class="text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3 shrink-0">
               點擊再次翻轉回正面
             </div>
           </div>
@@ -409,7 +413,7 @@
 
       <!-- 3D 卡牌下方更新時間提示 -->
       <div class="max-w-2xl mx-auto text-center text-xs text-slate-400 dark:text-slate-500 pt-1 pb-2">
-        🕒 詞庫最後更新日期時間：<span class="font-medium text-slate-600 dark:text-slate-300">2026-09-22 02:40:30</span>
+        🕒 詞庫最後更新日期時間：<span class="font-medium text-slate-600 dark:text-slate-300">2026-09-22 02:53:04</span>
       </div>
 
     </section>
@@ -826,7 +830,7 @@ git push</pre>
   <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-12 border-t border-slate-200 dark:border-slate-800/80 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
     <div class="flex items-center justify-center flex-wrap gap-2 sm:gap-4">
       <span class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
-        <span>🕒</span> 最後更新日期時間：<span class="text-emerald-600 dark:text-emerald-400 font-bold">2026-09-22 02:40:30</span>
+        <span>🕒</span> 最後更新日期時間：<span class="text-emerald-600 dark:text-emerald-400 font-bold">2026-09-22 02:53:04</span>
       </span>
       <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
       <span>總收錄 <strong>527</strong> 筆</span>
@@ -1166,8 +1170,42 @@ git push</pre>
       document.getElementById('fc-front-lang-hint').innerText = `[${card.front_flag} ${card.front_lang}原文]`;
       document.getElementById('fc-back-lang-hint').innerText = `[${card.back_flag} ${card.back_lang}釋義]`;
 
-      document.getElementById('fc-front-text').innerText = card.front;
-      document.getElementById('fc-back-text').innerText = card.back;
+      // 動態自適應字級演算法 (防止長文或多行列表破版超出卡牌)
+      const frontText = card.front || "";
+      const frontLen = frontText.length;
+      const frontLines = frontText.split('
+').length;
+      const frontEl = document.getElementById('fc-front-text');
+      frontEl.innerText = frontText;
+
+      if (frontLines >= 6 || frontLen > 140) {
+        frontEl.className = "field-en text-sm sm:text-base font-normal leading-relaxed text-slate-800 dark:text-slate-200 text-left w-full";
+      } else if (frontLines >= 3 || frontLen > 65) {
+        frontEl.className = "field-en text-base sm:text-lg font-medium leading-normal text-slate-900 dark:text-white text-center w-full";
+      } else if (frontLen > 30) {
+        frontEl.className = "field-en text-xl sm:text-2xl font-bold leading-snug text-slate-900 dark:text-white text-center w-full";
+      } else {
+        frontEl.className = "field-en text-2xl sm:text-3xl font-extrabold leading-snug text-slate-900 dark:text-white text-center w-full";
+      }
+
+      // 背面文字同樣進行自適應縮放
+      const backText = card.back || "";
+      const backLen = backText.length;
+      const backLines = backText.split('
+').length;
+      const backEl = document.getElementById('fc-back-text');
+      backEl.innerText = backText;
+
+      if (backLines >= 6 || backLen > 140) {
+        backEl.className = "field-zh text-sm sm:text-base font-normal leading-relaxed text-emerald-700 dark:text-emerald-300 text-left w-full";
+      } else if (backLines >= 3 || backLen > 65) {
+        backEl.className = "field-zh text-base sm:text-lg font-medium leading-normal text-emerald-700 dark:text-emerald-300 text-center w-full";
+      } else if (backLen > 30) {
+        backEl.className = "field-zh text-xl sm:text-2xl font-bold leading-snug text-emerald-700 dark:text-emerald-300 text-center w-full";
+      } else {
+        backEl.className = "field-zh text-2xl sm:text-3xl font-bold leading-relaxed text-emerald-700 dark:text-emerald-300 text-center w-full";
+      }
+
       document.getElementById('fc-type-badge').innerText = card.type;
       document.getElementById('fc-cat-badge').innerText = card.category;
       
