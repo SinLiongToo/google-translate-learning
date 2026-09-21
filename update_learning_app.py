@@ -798,9 +798,16 @@ def generate_interactive_html(items):
           </button>
         </div>
 
-        <button onclick="nextCard()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
-          下一張 <span>→</span>
-        </button>
+        <!-- 下一張與自動播放按鈕組 -->
+        <div class="flex items-center gap-2">
+          <button onclick="nextCard()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
+            下一張 <span>→</span>
+          </button>
+          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5" title="自動巡迴播放：朗讀正面 ➔ 翻牌 ➔ 朗讀釋義 ➔ 自動下一張 (快捷鍵: A)">
+            <span id="autoplay-icon">▶</span>
+            <span id="autoplay-text">自動播放</span>
+          </button>
+        </div>
       </div>
 
       <!-- 3D 卡牌下方更新時間提示 -->
@@ -1004,6 +1011,7 @@ def generate_interactive_html(items):
           </p>
           <ul class="text-xs text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1">
             <li>支援 🔊 正反面獨立母語發音（英/法/中自動切換）。</li>
+            <li>支援 ▶ 自動播放功能（位於「下一張」按鈕旁，朗讀正面 ➔ 自動翻牌 ➔ 朗讀背面 ➔ 前往下一張循環巡航）。</li>
             <li>可手動標記 🔴 困難、🟡 學習中、🟢 已精熟。</li>
             <li>點擊 🎲 抽卡 可將現有篩選範圍內的卡片隨機洗牌。</li>
           </ul>
@@ -1077,6 +1085,10 @@ def generate_interactive_html(items):
             <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
               <span class="text-slate-600 dark:text-slate-400">播放當前卡面母語語音</span>
               <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold">P</kbd>
+            </div>
+            <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-400">啟動 / 停止卡牌自動巡航播放</span>
+              <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold">A</kbd>
             </div>
             <div class="flex items-center justify-between py-1">
               <span class="text-slate-600 dark:text-slate-400">標記掌握度（困難 / 學習 / 精熟）</span>
@@ -1411,12 +1423,29 @@ git push</pre>
     // ==========================================
     // Web Speech API 真人多語發音 (支援法語 fr-FR、英語 en-US、中文 zh-TW)
     // ==========================================
-    function playAudio(text, lang = 'en-US') {{
-      if (!('speechSynthesis' in window)) return;
+    function playAudio(text, lang = 'en-US', onEnd = null) {{
+      if (!('speechSynthesis' in window)) {{
+        if (onEnd) setTimeout(onEnd, 1200);
+        return;
+      }}
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang;
       utterance.rate = ttsRate;
+      if (onEnd) {{
+        let called = false;
+        const callbackOnce = () => {{
+          if (!called) {{
+            called = true;
+            onEnd();
+          }}
+        }};
+        utterance.onend = callbackOnce;
+        utterance.onerror = callbackOnce;
+        // 防呆看門狗計時器，避免特定瀏覽器丟失 onend 事件卡住
+        const timeoutMs = Math.max(3000, (text.length * 150) / ttsRate);
+        setTimeout(callbackOnce, timeoutMs);
+      }}
       window.speechSynthesis.speak(utterance);
     }}
 
@@ -1438,6 +1467,9 @@ git push</pre>
     // 視角切換 (Tabs)
     // ==========================================
     function switchTab(tabId) {{
+      if (tabId !== 'flashcard' && isAutoPlaying) {{
+        stopAutoPlay();
+      }}
       activeTab = tabId;
       ['flashcard', 'list', 'quiz', 'graph', 'help'].forEach(id => {{
         const btn = document.getElementById('tab-' + id);
@@ -1460,6 +1492,7 @@ git push</pre>
     // 3D 翻轉卡牌模式 (Flashcards - 極速響應版，支援語系篩選)
     // ==========================================
     function onFlashcardFilterChange() {{
+      if (isAutoPlaying) stopAutoPlay();
       const langFilter = document.getElementById('fc-filter-lang') ? document.getElementById('fc-filter-lang').value : 'all';
       const catFilter = document.getElementById('fc-filter-cat') ? document.getElementById('fc-filter-cat').value : 'all';
       const typeFilter = document.getElementById('fc-filter-type') ? document.getElementById('fc-filter-type').value : 'all';
@@ -1570,6 +1603,11 @@ git push</pre>
         currentCardIndex = filteredCards.length - 1;
       }}
       updateFlashcardUI();
+      if (isAutoPlaying) {{
+        if (autoPlayTimer) clearTimeout(autoPlayTimer);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        autoPlayTimer = setTimeout(runAutoPlayStep, 350);
+      }}
     }}
 
     function nextCard() {{
@@ -1579,6 +1617,11 @@ git push</pre>
         currentCardIndex = 0;
       }}
       updateFlashcardUI();
+      if (isAutoPlaying) {{
+        if (autoPlayTimer) clearTimeout(autoPlayTimer);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        autoPlayTimer = setTimeout(runAutoPlayStep, 350);
+      }}
     }}
 
     function setMastery(status) {{
@@ -1588,6 +1631,120 @@ git push</pre>
       userProgress[card.id] = status;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
       nextCard();
+    }}
+
+    // ==========================================
+    // 3D 卡牌自動連續播放巡航 (Auto-Play System)
+    // ==========================================
+    let isAutoPlaying = false;
+    let autoPlayTimer = null;
+
+    function toggleAutoPlay() {{
+      if (isAutoPlaying) {{
+        stopAutoPlay();
+      }} else {{
+        startAutoPlay();
+      }}
+    }}
+
+    function startAutoPlay() {{
+      if (filteredCards.length === 0) return;
+      isAutoPlaying = true;
+      updateAutoPlayButtonUI(true);
+      runAutoPlayStep();
+    }}
+
+    function stopAutoPlay() {{
+      isAutoPlaying = false;
+      if (autoPlayTimer) {{
+        clearTimeout(autoPlayTimer);
+        autoPlayTimer = null;
+      }}
+      if ('speechSynthesis' in window) {{
+        window.speechSynthesis.cancel();
+      }}
+      updateAutoPlayButtonUI(false);
+    }}
+
+    function updateAutoPlayButtonUI(playing) {{
+      const btn = document.getElementById('btn-autoplay');
+      const icon = document.getElementById('autoplay-icon');
+      const text = document.getElementById('autoplay-text');
+      if (!btn) return;
+      if (playing) {{
+        btn.className = "px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-medium shadow-lg shadow-rose-600/30 transition flex items-center gap-1.5 animate-pulse";
+        if (icon) icon.innerText = '⏸';
+        if (text) text.innerText = '停止播放';
+      }} else {{
+        btn.className = "px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5";
+        if (icon) icon.innerText = '▶';
+        if (text) text.innerText = '自動播放';
+      }}
+    }}
+
+    function runAutoPlayStep() {{
+      if (!isAutoPlaying) return;
+      const card = filteredCards[currentCardIndex];
+      if (!card) {{
+        stopAutoPlay();
+        return;
+      }}
+
+      // 1. 若卡牌處於翻面狀態，先平滑翻回正面
+      if (isFlipped) {{
+        flipCard();
+      }}
+
+      // 稍微給 200ms 等待卡牌翻正後發音
+      autoPlayTimer = setTimeout(() => {{
+        if (!isAutoPlaying) return;
+
+        // 2. 朗讀正面文字（法文/英文原生口音）
+        playAudio(card.front, card.front_voice || 'en-US', () => {{
+          if (!isAutoPlaying) return;
+
+          // 3. 正面朗讀結束後，停留 1.6 秒讓學習者在心中回想中文
+          autoPlayTimer = setTimeout(() => {{
+            if (!isAutoPlaying) return;
+
+            // 4. 自動翻轉至背面
+            if (!isFlipped) {{
+              flipCard();
+            }}
+
+            // 等待 300ms 翻轉動畫完成後朗讀背面釋義
+            autoPlayTimer = setTimeout(() => {{
+              if (!isAutoPlaying) return;
+
+              playAudio(card.back, card.back_voice || 'zh-TW', () => {{
+                if (!isAutoPlaying) return;
+
+                // 5. 背面朗讀結束後，停留 2.0 秒讓學習者消化
+                autoPlayTimer = setTimeout(() => {{
+                  if (!isAutoPlaying) return;
+
+                  // 6. 自動前進到下一張
+                  if (currentCardIndex < filteredCards.length - 1) {{
+                    currentCardIndex++;
+                  }} else {{
+                    currentCardIndex = 0; // 循環播放
+                  }}
+                  updateFlashcardUI();
+
+                  // 延遲 400ms 等待切換過渡後開始下一張
+                  autoPlayTimer = setTimeout(() => {{
+                    runAutoPlayStep();
+                  }}, 400);
+
+                }}, 2000);
+              }});
+
+            }}, 300);
+
+          }}, 1600);
+        }});
+
+      }}, 200);
     }}
 
     // ==========================================
@@ -2088,6 +2245,8 @@ git push</pre>
           setMastery('mastered');
         }} else if (e.key.toLowerCase() === 'p') {{
           playFrontAudio();
+        }} else if (e.key.toLowerCase() === 'a') {{
+          toggleAutoPlay();
         }}
       }}
     }});
@@ -2180,7 +2339,8 @@ def generate_readme(items):
 
 - 📇 **3D 翻牌抽測模式 (3D Flashcards)**：
   - 0.2 秒極速響應翻牌，正反面獨立母語語音發音（法文 `fr-FR`、英文 `en-US`、繁中 `zh-TW`）。
-  - 支援鍵盤捷徑操作（`Space` 翻牌、`←`/`→` 切換、`P` 朗讀、`1`/`2`/`3` 掌握度標記）。
+  - **▶ 自動巡航播放**：位於「下一張」按鈕旁，朗讀正面 ➔ 自動翻牌 ➔ 朗讀背面 ➔ 前往下一張全自動循環（支援快捷鍵 `A` 隨時切換開關）。
+  - 支援鍵盤捷徑操作（`Space` 翻牌、`←`/`→` 切換、`P` 朗讀、`A` 自動播放、`1`/`2`/`3` 掌握度標記）。
   - 隨機抽卡洗牌功能。
 - 📋 **全方位詞庫清單 (Vocab List)**：
   - 支援即時關鍵字模糊搜尋、多維度組合過濾（語系、主題、類型、掌握狀態）。
