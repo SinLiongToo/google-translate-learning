@@ -408,6 +408,7 @@ def generate_interactive_html(items):
     word_count = len([x for x in items if x["type"] == "word"])
     phrase_count = len([x for x in items if x["type"] == "phrase"])
     sentence_count = len([x for x in items if x["type"] == "sentence"])
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     html_content = f"""<!DOCTYPE html>
 <html lang="zh-TW" class="dark">
@@ -800,6 +801,11 @@ def generate_interactive_html(items):
         <button onclick="nextCard()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
           下一張 <span>→</span>
         </button>
+      </div>
+
+      <!-- 3D 卡牌下方更新時間提示 -->
+      <div class="max-w-2xl mx-auto text-center text-xs text-slate-400 dark:text-slate-500 pt-1 pb-2">
+        🕒 詞庫最後更新日期時間：<span class="font-medium text-slate-600 dark:text-slate-300">{now_str}</span>
       </div>
 
     </section>
@@ -1206,6 +1212,24 @@ git push</pre>
     </section>
 
   </main>
+
+  <!-- 頁尾：更新時間與系統資訊 -->
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-12 border-t border-slate-200 dark:border-slate-800/80 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
+    <div class="flex items-center justify-center flex-wrap gap-2 sm:gap-4">
+      <span class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
+        <span>🕒</span> 最後更新日期時間：<span class="text-emerald-600 dark:text-emerald-400 font-bold">{now_str}</span>
+      </span>
+      <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+      <span>總收錄 <strong>{total_count}</strong> 筆</span>
+      <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+      <span>🇫🇷 法語對翻 {french_count} 筆</span>
+      <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
+      <span>🇬🇧 英語/繁中 {en_zh_count} 筆</span>
+    </div>
+    <p class="text-[11px] text-slate-400 dark:text-slate-500">
+      Google 翻譯多語互動學習系統 · <a href="https://sinliongtoo.github.io/google-translate-learning/" target="_blank" class="hover:underline hover:text-emerald-500">GitHub Pages 線上版</a>
+    </p>
+  </footer>
 
   <!-- 滑出式單字詳情抽屜 (Side Drawer) -->
   <div id="detail-drawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col justify-between overflow-y-auto">
@@ -2137,6 +2161,7 @@ def generate_readme(items):
     total = len(items)
     french_count = len([x for x in items if x["is_french"]])
     en_count = total - french_count
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     content = f"""# Google 翻譯詞庫互動學習卡牌系統 (G-Translate Learning Hub)
 
@@ -2177,6 +2202,7 @@ def generate_readme(items):
 
 ## 📊 目前收錄統計
 
+- **最後更新時間**：`{now_str}`
 - **總收錄詞條**：{total} 筆
   - 🇬🇧 英語 ⇄ 繁中：{en_count} 筆
   - 🇫🇷 法語對翻專題：{french_count} 筆
