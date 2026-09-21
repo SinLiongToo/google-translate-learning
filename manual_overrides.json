@@ -1,0 +1,20 @@
+{
+  "_README": "👑 這是最高優先級的人工自訂覆蓋庫。在此設定的條目權重最高，執行 update_learning_app.py 時絕不會被覆蓋。",
+  "overrides": {
+    "due diligence": {
+      "zh": "盡職調查 / 風險排除",
+      "notes": "商務與投資併購時的必備核實審查程序",
+      "category": "商業財務"
+    },
+    "free cash flow": {
+      "zh": "自由現金流 (FCF)",
+      "notes": "營業現金流扣除資本支出，企業永續經營與股利發放的核心指標",
+      "category": "商業財務"
+    },
+    "eudaimonia": {
+      "zh": "幸福 / 靈魂的至善繁榮",
+      "notes": "亞里斯多德哲學概念，指透過實踐美德實現真正的潛能與幸福",
+      "category": "生活哲思"
+    }
+  }
+}
