@@ -587,6 +587,9 @@ def generate_interactive_html(items):
         <button id="tab-graph" onclick="switchTab('graph')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
           <span>🕸️</span> 關係圖譜
         </button>
+        <button id="tab-help" onclick="switchTab('help')" class="tab-btn px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-300/60 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800">
+          <span>📖</span> 使用說明
+        </button>
       </div>
 
       <!-- 工具按鈕：發音語速、深淺色切換 -->
@@ -964,6 +967,244 @@ def generate_interactive_html(items):
       </div>
     </section>
 
+    <!-- ======================================================== -->
+    <!-- 視角五：📖 使用手冊與系統說明 (Help & User Manual) -->
+    <!-- ======================================================== -->
+    <section id="view-help" class="space-y-6 hidden max-w-5xl mx-auto">
+      
+      <!-- 頂部引言橫幅 -->
+      <div class="glass-panel p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+        <div class="absolute right-0 top-0 translate-x-8 -translate-y-8 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-2xl">📖</span>
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">系統使用說明與操作手冊</h2>
+          <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">User Manual</span>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
+          歡迎使用 Google 翻譯詞庫互動學習系統！本系統將您在 Google 翻譯中標記星號儲存的單字與片語，自動轉化為具備 3D 抽認卡、多國語言母語語音、智慧分類與知識圖譜的現代化學習工具。
+        </p>
+      </div>
+
+      <!-- 核心四大功能快速上手 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- 3D 卡牌 -->
+        <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5">
+          <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-base">
+            <span>📇</span> 3D 翻牌抽測模式
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            模擬實體抽認卡（Flashcards），正面為外語原文，背面為中文釋義。點擊卡牌本體或按 <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-[10px]">Space</kbd> 即可在 0.2 秒內平滑 3D 翻轉。
+          </p>
+          <ul class="text-xs text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1">
+            <li>支援 🔊 正反面獨立母語發音（英/法/中自動切換）。</li>
+            <li>可手動標記 🔴 困難、🟡 學習中、🟢 已精熟。</li>
+            <li>點擊 🎲 抽卡 可將現有篩選範圍內的卡片隨機洗牌。</li>
+          </ul>
+        </div>
+
+        <!-- 詞庫清單 -->
+        <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5">
+          <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-base">
+            <span>📋</span> 詞庫清單與搜尋
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            以結構化表格檢視所有已收錄條目，支援毫秒級全域模糊搜尋與多維條件篩選。
+          </p>
+          <ul class="text-xs text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1">
+            <li>輸入關鍵字即時比對原文、釋義或備註。</li>
+            <li>可依語系（英中、法英、法中）、分類主題與掌握狀態篩選。</li>
+            <li>點擊任一項目右側的 👁️ 按鈕可滑出側邊詳細資訊抽屜。</li>
+          </ul>
+        </div>
+
+        <!-- 自我測驗 -->
+        <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5">
+          <div class="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-base">
+            <span>✍️</span> 隨機自我測驗 (Quiz)
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            隨機抽取 10 題進行四選一測驗，包含「外語選中文」與「中文選外語」雙向題型。
+          </p>
+          <ul class="text-xs text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1">
+            <li>即時反饋答對/答錯，並記錄錯題。</li>
+            <li>完成 10 題後即時結算分數並列出租錯題清單方便針對性複習。</li>
+          </ul>
+        </div>
+
+        <!-- 關係圖譜 -->
+        <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2.5">
+          <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-base">
+            <span>🕸️</span> 知識網絡圖譜 (Graph)
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            基於原生 Canvas 物理引擎的力導向網絡圖，直觀展現各單字與分類主題的聚類關係。
+          </p>
+          <ul class="text-xs text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1">
+            <li>滑鼠滾輪縮放、拖曳畫布自由平移探索。</li>
+            <li>點擊任一單字節點直接開啟側邊欄檢視詳細釋義與發音。</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- 快捷鍵指南與欄位遮蓋開關 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- 鍵盤快捷鍵 -->
+        <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+            <span>⌨️</span> 鍵盤快捷鍵一覽 (桌面版限定)
+          </h3>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-400">翻轉卡牌正面 / 背面</span>
+              <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold">Space</kbd>
+            </div>
+            <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-400">切換至上一張 / 下一張卡片</span>
+              <div class="flex gap-1 font-mono font-bold">
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">←</kbd>
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">→</kbd>
+              </div>
+            </div>
+            <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-400">播放當前卡面母語語音</span>
+              <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold">P</kbd>
+            </div>
+            <div class="flex items-center justify-between py-1">
+              <span class="text-slate-600 dark:text-slate-400">標記掌握度（困難 / 學習 / 精熟）</span>
+              <div class="flex gap-1 font-mono font-bold">
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">1</kbd>
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">2</kbd>
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">3</kbd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 記憶遮蓋練習情境 -->
+        <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+            <span>🎭</span> 欄位遮蓋情境 (主動回想練習)
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            透過頂部導航列下方的「欄位遮蓋開關」，可一鍵套用不同自測情境：
+          </p>
+          <div class="space-y-2 text-xs">
+            <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
+              <span class="font-bold text-emerald-600 dark:text-emerald-400">遮背面（測理解）</span>
+              <p class="text-slate-500 dark:text-slate-400 mt-0.5">隱藏中文翻譯，強迫自己看到英文/法文時在大腦中提取中文意思。</p>
+            </div>
+            <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
+              <span class="font-bold text-blue-600 dark:text-blue-400">遮正面（默背原文）</span>
+              <p class="text-slate-500 dark:text-slate-400 mt-0.5">隱藏外語原文，看中文練習拼字或在心裡默唸正確外語單字。</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 🇫🇷 法語專題與多語系說明 -->
+      <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+            <span>🌐</span> 語系配對與法語對翻功能說明
+          </h3>
+          <span class="px-2 py-0.5 text-xs rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold border border-blue-500/30">
+            收錄 105 筆法語
+          </span>
+        </div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          Google 翻譯匯出檔中若混雜了法語與英語，系統已自動為您精準拆分與辨識，絕不互相混淆：
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-xs space-y-1">
+            <span class="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1">🇫🇷 法語原生發音</span>
+            <p class="text-slate-500 dark:text-slate-400">點擊法文單字時，自動呼叫瀏覽器原生 <code class="text-slate-700 dark:text-slate-300 font-mono">fr-FR</code> 法語語音引擎朗讀，保留道地法式腔調。</p>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-xs space-y-1">
+            <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">🇬🇧 英語標準發音</span>
+            <p class="text-slate-500 dark:text-slate-400">英語單字調用 <code class="text-slate-700 dark:text-slate-300 font-mono">en-US</code> 發音，繁體中文調用 <code class="text-slate-700 dark:text-slate-300 font-mono">zh-TW</code> 發音。</p>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-xs space-y-1">
+            <span class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">🎯 專屬下拉篩選</span>
+            <p class="text-slate-500 dark:text-slate-400">可一鍵切換「🇫🇷 所有法語對翻」、「🇫🇷⇄🇬🇧 法英對翻」或「🇬🇧⇄🇹🇼 英中對翻」。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📱 手機/平板安裝指南 (PWA體驗) -->
+      <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+          <span>📱</span> 如何安裝到手機 / 平板主畫面（宛如原生 App）
+        </h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          本系統已具備極速響應式設計，您可以直接將其加到行動裝置桌面，隨點即學：
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 space-y-1.5">
+            <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <span>🍎</span> iPhone / iPad (Safari)
+            </div>
+            <ol class="text-slate-500 dark:text-slate-400 list-decimal list-inside space-y-1">
+              <li>以 Safari 開啟本線上網址。</li>
+              <li>點選底部分享按鈕（方形帶向上箭頭 📤）。</li>
+              <li>滑動選單並點擊 <strong>「加入主畫面 (Add to Home Screen)」</strong>。</li>
+            </ol>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 space-y-1.5">
+            <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <span>🤖</span> Android 手機 (Chrome / Edge)
+            </div>
+            <ol class="text-slate-500 dark:text-slate-400 list-decimal list-inside space-y-1">
+              <li>以 Chrome 開啟本線上網址。</li>
+              <li>點選右上角三點選單圖示 (⋮)。</li>
+              <li>點擊 <strong>「加到主畫面」</strong> 或 <strong>「安裝應用程式」</strong>。</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔄 日後更新 CSV 與部署流程 -->
+      <div class="p-5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+          <span>🔄</span> 詞庫更新與自動發布作業流程 (SOP)
+        </h3>
+        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          當您在 Google 翻譯下載了新的 CSV 詞庫檔案時，更新只需 3 步驟：
+        </p>
+        <div class="space-y-2 text-xs">
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 flex items-start gap-2.5">
+            <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">Step 1</span>
+            <div>
+              <span class="font-semibold text-slate-800 dark:text-slate-200">放入新 CSV 檔案</span>
+              <p class="text-slate-500 dark:text-slate-400">將新匯出的 CSV 覆蓋專案目錄下的 <code class="text-slate-700 dark:text-slate-300 font-mono">g_translate.csv.csv</code>。</p>
+            </div>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 flex items-start gap-2.5">
+            <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">Step 2</span>
+            <div class="w-full">
+              <span class="font-semibold text-slate-800 dark:text-slate-200">執行本地自動化更新腳本</span>
+              <p class="text-slate-500 dark:text-slate-400 mb-1">系統將在 1 秒內自動完成去重、多語識別、分類歸納與網頁編譯：</p>
+              <pre class="p-2 rounded bg-slate-900 text-emerald-400 font-mono text-[11px] overflow-x-auto">python update_learning_app.py</pre>
+            </div>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 flex items-start gap-2.5">
+            <span class="font-mono font-bold text-emerald-600 dark:text-emerald-400">Step 3</span>
+            <div class="w-full">
+              <span class="font-semibold text-slate-800 dark:text-slate-200">推送到 GitHub 自動發布</span>
+              <p class="text-slate-500 dark:text-slate-400 mb-1">推送完成後，GitHub Pages 將在 30 秒內自動更新線上學習網頁：</p>
+              <pre class="p-2 rounded bg-slate-900 text-emerald-400 font-mono text-[11px] overflow-x-auto">git add .
+git commit -m "更新詞庫與學習手冊"
+git push</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
   </main>
 
   <!-- 滑出式單字詳情抽屜 (Side Drawer) -->
@@ -1174,7 +1415,7 @@ def generate_interactive_html(items):
     // ==========================================
     function switchTab(tabId) {{
       activeTab = tabId;
-      ['flashcard', 'list', 'quiz', 'graph'].forEach(id => {{
+      ['flashcard', 'list', 'quiz', 'graph', 'help'].forEach(id => {{
         const btn = document.getElementById('tab-' + id);
         const view = document.getElementById('view-' + id);
         if (id === tabId) {{
@@ -1899,20 +2140,133 @@ def generate_readme(items):
     
     content = f"""# Google 翻譯詞庫互動學習卡牌系統 (G-Translate Learning Hub)
 
-本專案是一個基於 Python 與現代化網頁技術的自包含語言學習工作流，完整支援英語與法語（法翻英、英翻法、法翻中）等多語系辨識、原生口音朗讀、多維度篩選與 3D 翻轉卡牌。
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen?logo=github)](https://sinliongtoo.github.io/google-translate-learning/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg?logo=python)](https://www.python.org/)
+[![Multi-Language](https://img.shields.io/badge/Languages-EN%20%7C%20FR%20%7C%20ZH-orange.svg)](#)
+
+> 將 Google 翻譯（Google Translate）星號儲存的單字與片語，自動轉化為具備 **3D 抽認卡**、**多國語言母語語音 (TTS)**、**智慧分類**、**隨堂測驗**、**知識圖譜** 與 **線上使用手冊 (User Manual Tab)** 的現代化自包含學習網頁。
+
+🔗 **線上學習網址 (GitHub Pages)**: [https://sinliongtoo.github.io/google-translate-learning/](https://sinliongtoo.github.io/google-translate-learning/)
 
 ---
 
-## 專案亮點與多語支援
+## 🌟 核心特色
 
-- **收錄總量**：共 {total} 筆（🇬🇧 英語/繁中：{en_count} 筆 | 🇫🇷 法語對翻：{french_count} 筆）。
-- **多語系辨別與選擇**：
-  - 獨立語言對徽章標記（`🇫🇷 法文 ➔ 🇬🇧 英文`、`🇬🇧 英文 ➔ 🇫🇷 法文` 等）。
-  - 3D 卡牌與清單提供專屬語系篩選下拉選單。
-  - Web Speech API 原生多語發音（法文自動切換 `fr-FR` 法國口音，英文切換 `en-US`）。
-- **輸出成果**：
-  - `index.html`：自包含互動學習卡牌 Web App（3D 翻牌、清單、測驗、Canvas 圖譜）。
-  - `單字與片語學習手冊.md`：特設「🇫🇷 法語對翻專題篇」與「🇬🇧 英中分類篇」之精美筆記。
+- 📇 **3D 翻牌抽測模式 (3D Flashcards)**：
+  - 0.2 秒極速響應翻牌，正反面獨立母語語音發音（法文 `fr-FR`、英文 `en-US`、繁中 `zh-TW`）。
+  - 支援鍵盤捷徑操作（`Space` 翻牌、`←`/`→` 切換、`P` 朗讀、`1`/`2`/`3` 掌握度標記）。
+  - 隨機抽卡洗牌功能。
+- 📋 **全方位詞庫清單 (Vocab List)**：
+  - 支援即時關鍵字模糊搜尋、多維度組合過濾（語系、主題、類型、掌握狀態）。
+  - 點擊即彈出側邊詳細資訊抽屜 (Side Drawer)。
+- ✍️ **自我測驗模式 (Interactive Quiz)**：
+  - 隨機 10 題四選一測驗，雙向考題（外語選中文 / 中文選外語）。
+  - 即時反饋、記分與錯題統計複習。
+- 🕸️ **知識網絡圖譜 (Canvas Force Graph)**：
+  - 基於原生 HTML5 Canvas 物理引力引擎，視覺化呈現主題樞紐與單字群聚關聯。
+  - 支援拖曳、滾輪縮放與點擊交互。
+- 📖 **內建使用手冊分頁 (Help & User Manual Tab)**：
+  - 網頁內建獨立說明書分頁，隨時查閱功能說明、快捷鍵與更新指南。
+- 🇫🇷 **深度多語系支援 (French & English Recognition)**：
+  - 自動辨識法文對翻（法翻英、英翻法、法翻中），視覺醒目標籤與專屬下拉篩選。
+- 🌓 **深淺色主題與無依賴設計**：
+  - 完美適配 Dark Mode / Light Mode，完全自包含（Single Page Application），支援離線運作與手機「加入主畫面 (PWA)」。
+
+---
+
+## 📊 目前收錄統計
+
+- **總收錄詞條**：{total} 筆
+  - 🇬🇧 英語 ⇄ 繁中：{en_count} 筆
+  - 🇫🇷 法語對翻專題：{french_count} 筆
+- **詞彙類型**：單字 (Word)、片語 (Phrase)、實用例句 (Sentence)
+- **領域分類**：商業財務、科技半導體、職場管理、生活哲思、實用表達
+
+---
+
+## 🏗️ 系統架構
+
+```text
+[Google 翻譯匯出 CSV] (g_translate.csv.csv)
+          │
+          ▼
+[update_learning_app.py] ◄───► [manual_overrides.json] (👑 人工自訂覆蓋庫，最高優先級)
+          │                            │
+          ▼                            ▼
+   [vocab_db.json] ──────────► [單字與片語學習手冊.md]
+          │
+          ▼
+    [index.html] (自包含 Web App：含 3D 卡牌、清單、測驗、圖譜、使用說明書)
+          │
+          ▼ (git push)
+   [GitHub Pages] (https://sinliongtoo.github.io/google-translate-learning/)
+```
+
+---
+
+## 🔄 詞庫更新與發布作業流程 (SOP)
+
+當您在 Google 翻譯累積了新單字並匯出新的 CSV 檔案時，更新僅需 3 個步驟：
+
+### 步驟 1：放入新 CSV 檔
+將下載的 CSV 檔覆蓋至專案目錄下的 `g_translate.csv.csv`。
+
+### 步驟 2：執行自動化編譯腳本
+在終端機中執行：
+```powershell
+python update_learning_app.py
+```
+> 系統將在 1 秒內自動完成：
+> 1. 去除重複項與清理雜訊。
+> 2. 自動辨識語系（英語、法語、繁體中文）並指派母語語音代碼。
+> 3. 自動執行啟發式領域分類（完全本地運算，不需要消耗 LLM Token）。
+> 4. 合併 `manual_overrides.json` 自訂設定。
+> 5. 重新編譯 `index.html`、`單字與片語學習手冊.md`、`vocab_db.json` 與 `README.md`。
+
+### 步驟 3：推送至 GitHub
+```powershell
+git add .
+git commit -m "feat: update vocabulary and app"
+git push
+```
+推送完成後，GitHub Actions 將在 30 秒內自動將最新內容部署至線上 GitHub Pages！
+
+---
+
+## 👑 人工手動覆蓋設定 (`manual_overrides.json`)
+
+若您對特定詞條的釋義、筆記或分類有專屬客製需求，可在 `manual_overrides.json` 中進行覆寫。此處設定的條目權重最高，更新時絕不會被自動規則覆蓋：
+
+```json
+{{
+  "overrides": {{
+    "cadence": {{
+      "front": "cadence",
+      "back": "工作節奏；組織常規進展頻率",
+      "category": "職場管理",
+      "notes": "在專案管理中常指會議或交付的固定節奏 (e.g., release cadence)",
+      "mastery": "mastered"
+    }}
+  }}
+}}
+```
+
+---
+
+## 📱 手機 / 行動裝置安裝指南
+
+1. 使用手機瀏覽器（iOS Safari 或 Android Chrome）開啟：  
+   `https://sinliongtoo.github.io/google-translate-learning/`
+2. **iPhone**：點擊底部分享圖示 ➔ 選擇 **「加入主畫面 (Add to Home Screen)」**。
+3. **Android**：點擊右上角三點選單 ➔ 選擇 **「加到主畫面」** 或 **「安裝應用程式」**。
+4. 即可如同原生 App 般在手機上隨開隨讀，隨時抽認複習！
+
+---
+
+## 📄 授權條款
+
+本專案基於 MIT 授權條款開放開源使用。
 """
     with open(README_OUTPUT, 'w', encoding='utf-8') as f:
         f.write(content)
