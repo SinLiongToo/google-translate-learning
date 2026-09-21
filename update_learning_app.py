@@ -799,11 +799,20 @@ def generate_interactive_html(items):
         </div>
 
         <!-- 下一張與自動播放按鈕組 -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center flex-wrap gap-2">
+          <!-- 播放模式切換：雙語模式 vs 英文模式 -->
+          <div class="flex items-center text-xs bg-slate-200/80 dark:bg-slate-800/80 rounded-xl p-1 border border-slate-300 dark:border-slate-700/60 shadow-inner">
+            <span class="pl-2 pr-1 text-slate-500 dark:text-slate-400 font-medium">播報:</span>
+            <select id="autoplay-mode-select" onchange="setAutoPlayMode(this.value)" class="bg-transparent text-slate-700 dark:text-slate-200 font-bold focus:outline-none cursor-pointer py-1.5 pr-2">
+              <option value="bilingual">🌐 雙語模式 (外語+中文)</option>
+              <option value="foreign_only">🔤 英文/純外語模式</option>
+            </select>
+          </div>
+
           <button onclick="nextCard()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center gap-2">
             下一張 <span>→</span>
           </button>
-          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5" title="自動巡迴播放：朗讀正面 ➔ 翻牌 ➔ 朗讀釋義 ➔ 自動下一張 (快捷鍵: A)">
+          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center gap-1.5" title="自動巡迴播放：依據選擇模式自動朗讀與切換 (快捷鍵: A)">
             <span id="autoplay-icon">▶</span>
             <span id="autoplay-text">自動播放</span>
           </button>
@@ -1011,7 +1020,7 @@ def generate_interactive_html(items):
           </p>
           <ul class="text-xs text-slate-500 dark:text-slate-400 list-disc list-inside space-y-1">
             <li>支援 🔊 正反面獨立母語發音（英/法/中自動切換）。</li>
-            <li>支援 ▶ 自動播放功能（位於「下一張」按鈕旁，朗讀正面 ➔ 自動翻牌 ➔ 朗讀背面 ➔ 前往下一張循環巡航）。</li>
+            <li>支援 ▶ 自動播放功能：可自由選擇<strong>「🌐 雙語模式」</strong>（外語 ➔ 自動翻牌 ➔ 中文釋義）或<strong>「🔤 英文/純外語模式」</strong>（純英文/法語沉浸聽力，不朗讀中文）。</li>
             <li>可手動標記 🔴 困難、🟡 學習中、🟢 已精熟。</li>
             <li>點擊 🎲 抽卡 可將現有篩選範圍內的卡片隨機洗牌。</li>
           </ul>
@@ -1635,9 +1644,24 @@ git push</pre>
 
     // ==========================================
     // 3D 卡牌自動連續播放巡航 (Auto-Play System)
+    // 支援：雙語模式 (外語+中文) 與 純英文/外語模式
     // ==========================================
+    const AUTOPLAY_MODE_KEY = 'gt_autoplay_mode_v1';
+    let autoPlayMode = localStorage.getItem(AUTOPLAY_MODE_KEY) || 'bilingual';
     let isAutoPlaying = false;
     let autoPlayTimer = null;
+
+    function setAutoPlayMode(mode) {{
+      autoPlayMode = mode;
+      localStorage.setItem(AUTOPLAY_MODE_KEY, mode);
+      const sel = document.getElementById('autoplay-mode-select');
+      if (sel) sel.value = mode;
+      if (isAutoPlaying) {{
+        if (autoPlayTimer) clearTimeout(autoPlayTimer);
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        autoPlayTimer = setTimeout(runAutoPlayStep, 300);
+      }}
+    }}
 
     function toggleAutoPlay() {{
       if (isAutoPlaying) {{
@@ -1703,45 +1727,70 @@ git push</pre>
         playAudio(card.front, card.front_voice || 'en-US', () => {{
           if (!isAutoPlaying) return;
 
-          // 3. 正面朗讀結束後，停留 1.6 秒讓學習者在心中回想中文
-          autoPlayTimer = setTimeout(() => {{
-            if (!isAutoPlaying) return;
-
-            // 4. 自動翻轉至背面
-            if (!isFlipped) {{
-              flipCard();
-            }}
-
-            // 等待 300ms 翻轉動畫完成後朗讀背面釋義
+          if (autoPlayMode === 'foreign_only') {{
+            // ==========================================
+            // 純英文 / 純外語模式：專注沉浸外語聽力
+            // 朗讀完正面後停留 2.0 秒吸收，直接切換至下一張
+            // ==========================================
             autoPlayTimer = setTimeout(() => {{
               if (!isAutoPlaying) return;
 
-              playAudio(card.back, card.back_voice || 'zh-TW', () => {{
+              if (currentCardIndex < filteredCards.length - 1) {{
+                currentCardIndex++;
+              }} else {{
+                currentCardIndex = 0; // 循環播放
+              }}
+              updateFlashcardUI();
+
+              autoPlayTimer = setTimeout(() => {{
+                runAutoPlayStep();
+              }}, 450);
+
+            }}, 2000);
+
+          }} else {{
+            // ==========================================
+            // 雙語模式：正面外語 ➔ 翻牌 ➔ 背面中文釋義
+            // ==========================================
+            // 正面朗讀結束後，停留 1.6 秒讓學習者在心中回想中文
+            autoPlayTimer = setTimeout(() => {{
+              if (!isAutoPlaying) return;
+
+              // 自動翻轉至背面
+              if (!isFlipped) {{
+                flipCard();
+              }}
+
+              // 等待 300ms 翻轉動畫完成後朗讀背面釋義
+              autoPlayTimer = setTimeout(() => {{
                 if (!isAutoPlaying) return;
 
-                // 5. 背面朗讀結束後，停留 2.0 秒讓學習者消化
-                autoPlayTimer = setTimeout(() => {{
+                playAudio(card.back, card.back_voice || 'zh-TW', () => {{
                   if (!isAutoPlaying) return;
 
-                  // 6. 自動前進到下一張
-                  if (currentCardIndex < filteredCards.length - 1) {{
-                    currentCardIndex++;
-                  }} else {{
-                    currentCardIndex = 0; // 循環播放
-                  }}
-                  updateFlashcardUI();
-
-                  // 延遲 400ms 等待切換過渡後開始下一張
+                  // 背面朗讀結束後，停留 2.0 秒讓學習者消化
                   autoPlayTimer = setTimeout(() => {{
-                    runAutoPlayStep();
-                  }}, 400);
+                    if (!isAutoPlaying) return;
 
-                }}, 2000);
-              }});
+                    if (currentCardIndex < filteredCards.length - 1) {{
+                      currentCardIndex++;
+                    }} else {{
+                      currentCardIndex = 0; // 循環播放
+                    }}
+                    updateFlashcardUI();
 
-            }}, 300);
+                    // 延遲 400ms 等待切換過渡後開始下一張
+                    autoPlayTimer = setTimeout(() => {{
+                      runAutoPlayStep();
+                    }}, 400);
 
-          }}, 1600);
+                  }}, 2000);
+                }});
+
+              }}, 300);
+
+            }}, 1600);
+          }}
         }});
 
       }}, 200);
@@ -2256,6 +2305,8 @@ git push</pre>
       initTheme();
       applyDisplayPrefs();
       updateFlashcardUI();
+      const sel = document.getElementById('autoplay-mode-select');
+      if (sel) sel.value = autoPlayMode;
     }});
   </script>
 </body>
@@ -2339,7 +2390,7 @@ def generate_readme(items):
 
 - 📇 **3D 翻牌抽測模式 (3D Flashcards)**：
   - 0.2 秒極速響應翻牌，正反面獨立母語語音發音（法文 `fr-FR`、英文 `en-US`、繁中 `zh-TW`）。
-  - **▶ 自動巡航播放**：位於「下一張」按鈕旁，朗讀正面 ➔ 自動翻牌 ➔ 朗讀背面 ➔ 前往下一張全自動循環（支援快捷鍵 `A` 隨時切換開關）。
+  - **▶ 自動巡航播放**：位於「下一張」按鈕旁，支援切換**「🌐 雙語模式」**（外語 ➔ 翻牌 ➔ 中文釋義）與**「🔤 英文/純外語模式」**（純外語沉浸聽力），支援快捷鍵 `A` 隨時切換開關。
   - 支援鍵盤捷徑操作（`Space` 翻牌、`←`/`→` 切換、`P` 朗讀、`A` 自動播放、`1`/`2`/`3` 掌握度標記）。
   - 隨機抽卡洗牌功能。
 - 📋 **全方位詞庫清單 (Vocab List)**：
