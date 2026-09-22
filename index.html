@@ -181,8 +181,15 @@
         </button>
       </div>
 
-      <!-- 工具按鈕：發音語速、深淺色切換 -->
+      <!-- 工具按鈕：全域搜尋、發音語速、深淺色切換 -->
       <div class="flex items-center space-x-2.5">
+        <!-- 全域快速查找按鈕 -->
+        <button onclick="openGlobalFind()" id="global-find-btn" class="p-2 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 text-xs font-semibold transition-colors" title="快速查找單字 (快捷鍵: Ctrl+K / F / /)">
+          <span>🔍</span>
+          <span class="hidden sm:inline">查找</span>
+          <kbd class="hidden md:inline px-1.5 py-0.5 text-[10px] bg-slate-200 dark:bg-slate-800 rounded text-slate-500 font-mono">Ctrl+K</kbd>
+        </button>
+
         <div class="flex items-center text-xs text-slate-600 dark:text-slate-400 bg-slate-200/80 dark:bg-slate-900/80 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700/60">
           <span class="mr-1.5">🔊 語速</span>
           <select id="tts-rate" onchange="updateTtsRate(this.value)" class="bg-transparent text-emerald-600 dark:text-emerald-400 font-semibold focus:outline-none cursor-pointer">
@@ -238,14 +245,23 @@
     <section id="view-flashcard" class="space-y-6">
       
       <!-- 卡牌操作與進度條 -->
-      <div class="max-w-2xl mx-auto flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
-        <div class="flex items-center gap-2">
-          <span>進度：</span>
-          <span id="fc-index" class="font-bold text-slate-900 dark:text-white text-base">1</span> / <span id="fc-total">100</span>
+      <div class="max-w-2xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 text-sm text-slate-600 dark:text-slate-400">
+        <div class="flex items-center justify-between sm:justify-start gap-3">
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span>進度：</span>
+            <span id="fc-index" class="font-bold text-slate-900 dark:text-white text-base">1</span> / <span id="fc-total">100</span>
+          </div>
+
+          <!-- 3D 卡牌即時檢索列 -->
+          <div class="relative flex-1 sm:w-48">
+            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 text-xs">🔍</span>
+            <input type="text" id="fc-search" oninput="onFlashcardFilterChange()" placeholder="搜尋卡牌 (按 / 聚焦)..." class="w-full pl-7 pr-6 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg focus:outline-none focus:border-emerald-500">
+            <button id="fc-search-clear" onclick="clearFlashcardSearch()" class="hidden absolute inset-y-0 right-0 pr-2 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs" title="清除搜尋">✕</button>
+          </div>
         </div>
         
         <!-- 多維篩選列：語系、分類、類型、掌握度 -->
-        <div class="flex items-center flex-wrap gap-2">
+        <div class="flex items-center flex-wrap gap-1.5 sm:gap-2 justify-end">
           <!-- 語言對篩選 (法語專屬選擇器) -->
           <select id="fc-filter-lang" onchange="onFlashcardFilterChange()" class="bg-white dark:bg-slate-900 border border-blue-500/50 dark:border-blue-400/50 text-blue-700 dark:text-blue-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none font-bold">
             <option value="all">🌐 全部語系 (527)</option>
@@ -414,7 +430,7 @@
 
       <!-- 3D 卡牌下方更新時間提示 -->
       <div class="max-w-2xl mx-auto text-center text-xs text-slate-400 dark:text-slate-500 pt-1 pb-2">
-        🕒 詞庫最後更新日期時間：<span class="font-medium text-slate-600 dark:text-slate-300">2026-09-22 03:30:34</span>
+        🕒 詞庫最後更新日期時間：<span class="font-medium text-slate-600 dark:text-slate-300">2026-09-22 17:44:42</span>
       </div>
 
     </section>
@@ -689,6 +705,20 @@
               <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold">P</kbd>
             </div>
             <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-400">開啟全域智慧查找 (Global Find)</span>
+              <div class="flex items-center gap-1 font-mono font-bold">
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-[11px]">Ctrl+K</kbd>
+                <span class="text-slate-400 font-normal">/</span>
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-[11px]">F</kbd>
+                <span class="text-slate-400 font-normal">/</span>
+                <kbd class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-[11px]">/</kbd>
+              </div>
+            </div>
+            <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-slate-600 dark:text-slate-400">關閉全域查找彈窗 / 側邊抽屜</span>
+              <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold">Esc</kbd>
+            </div>
+            <div class="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
               <span class="text-slate-600 dark:text-slate-400">啟動 / 停止卡牌自動巡航播放</span>
               <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono font-bold">A</kbd>
             </div>
@@ -831,7 +861,7 @@ git push</pre>
   <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-12 border-t border-slate-200 dark:border-slate-800/80 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
     <div class="flex items-center justify-center flex-wrap gap-2 sm:gap-4">
       <span class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
-        <span>🕒</span> 最後更新日期時間：<span class="text-emerald-600 dark:text-emerald-400 font-bold">2026-09-22 03:30:34</span>
+        <span>🕒</span> 最後更新日期時間：<span class="text-emerald-600 dark:text-emerald-400 font-bold">2026-09-22 17:44:42</span>
       </span>
       <span class="text-slate-300 dark:text-slate-700 hidden sm:inline">•</span>
       <span>總收錄 <strong>527</strong> 筆</span>
@@ -888,6 +918,13 @@ git push</pre>
           <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">備註與例句</label>
           <p id="drawer-notes" class="text-sm text-slate-700 dark:text-slate-300 mt-1 leading-relaxed"></p>
         </div>
+
+        <!-- 一鍵跳轉 3D 卡牌練習按鈕 -->
+        <div class="pt-2">
+          <button onclick="jumpFromDrawerToFlashcard()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95">
+            <span>📇</span> 在 3D 卡牌中練習此詞
+          </button>
+        </div>
       </div>
     </div>
 
@@ -904,6 +941,36 @@ git push</pre>
         <button onclick="setDrawerMastery('mastered')" class="px-3 py-1.5 rounded-lg text-xs bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-medium">
           🟢 已掌握
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 全域快速查找彈窗 (Spotlight Find Modal) -->
+  <!-- ======================================================== -->
+  <div id="global-find-modal" class="fixed inset-0 z-50 hidden flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-slate-950/60 backdrop-blur-sm transition-all" onclick="onGlobalFindBackdropClick(event)">
+    <div class="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[82vh]" onclick="event.stopPropagation()">
+      <!-- 搜尋標頭 -->
+      <div class="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3 bg-slate-50/50 dark:bg-slate-900/50">
+        <span class="text-emerald-500 text-lg sm:text-xl">🔍</span>
+        <input type="text" id="global-find-input" oninput="handleGlobalFindInput(this.value)" placeholder="查找原文、釋義、例句或主題 (支援中英法文)..." class="flex-1 bg-transparent text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <kbd class="hidden sm:inline px-2 py-0.5 text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-500 rounded border border-slate-200 dark:border-slate-700 font-mono">ESC 關閉</kbd>
+        <button onclick="closeGlobalFind()" class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-base leading-none" title="關閉">✕</button>
+      </div>
+
+      <!-- 結果統計與快捷引導 -->
+      <div class="px-4 py-2 bg-slate-100/70 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+        <div>找到 <span id="global-find-count" class="font-bold text-emerald-600 dark:text-emerald-400">0</span> 筆相符詞彙</div>
+        <div class="hidden sm:flex items-center gap-2 text-[11px]">
+          <span>操作：</span>
+          <span class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded font-mono text-[10px]">↑↓</span> 移動
+          <span class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded font-mono text-[10px]">Enter</span> 進入卡牌
+        </div>
+      </div>
+
+      <!-- 結果列表滾動區 -->
+      <div id="global-find-results" class="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 p-2 space-y-1">
+        <!-- 動態渲染搜尋結果 -->
       </div>
     </div>
   </div>
@@ -1091,16 +1158,32 @@ git push</pre>
     }
 
     // ==========================================
-    // 3D 翻轉卡牌模式 (Flashcards - 極速響應版，支援語系篩選)
+    // 3D 翻轉卡牌模式 (Flashcards - 極速響應版，支援語系與關鍵字即時檢索)
     // ==========================================
     function onFlashcardFilterChange() {
       if (isAutoPlaying) stopAutoPlay();
+      const searchInput = document.getElementById('fc-search');
+      const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const clearBtn = document.getElementById('fc-search-clear');
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', !searchQuery);
+      }
+
       const langFilter = document.getElementById('fc-filter-lang') ? document.getElementById('fc-filter-lang').value : 'all';
       const catFilter = document.getElementById('fc-filter-cat') ? document.getElementById('fc-filter-cat').value : 'all';
       const typeFilter = document.getElementById('fc-filter-type') ? document.getElementById('fc-filter-type').value : 'all';
       const masteryFilter = document.getElementById('fc-filter-mastery') ? document.getElementById('fc-filter-mastery').value : 'all';
 
       filteredCards = items.filter(card => {
+        if (searchQuery) {
+          const matchFront = (card.front || '').toLowerCase().includes(searchQuery);
+          const matchBack = (card.back || '').toLowerCase().includes(searchQuery);
+          const matchNotes = (card.notes || '').toLowerCase().includes(searchQuery);
+          const matchCat = (card.category || '').toLowerCase().includes(searchQuery);
+          const matchLang = (card.lang_badge || '').toLowerCase().includes(searchQuery);
+          if (!matchFront && !matchBack && !matchNotes && !matchCat && !matchLang) return false;
+        }
+
         // 語言篩選
         if (langFilter === 'en-zh' && card.lang_group !== 'en-zh') return false;
         if (langFilter === 'fr-all' && !card.is_french) return false;
@@ -1113,11 +1196,17 @@ git push</pre>
         return true;
       });
 
-      if (filteredCards.length === 0) {
-        filteredCards = items;
-      }
       currentCardIndex = 0;
       updateFlashcardUI();
+    }
+
+    function clearFlashcardSearch() {
+      const input = document.getElementById('fc-search');
+      if (input) {
+        input.value = '';
+        onFlashcardFilterChange();
+        input.focus();
+      }
     }
 
     function shuffleFlashcards() {
@@ -1130,6 +1219,7 @@ git push</pre>
     }
 
     function flipCard() {
+      if (filteredCards.length === 0) return;
       const inner = document.getElementById('card-inner');
       isFlipped = !isFlipped;
       if (isFlipped) {
@@ -1140,8 +1230,6 @@ git push</pre>
     }
 
     function updateFlashcardUI() {
-      if (filteredCards.length === 0) return;
-      const card = filteredCards[currentCardIndex];
       const inner = document.getElementById('card-inner');
       
       // 切換卡片時瞬間重設為正面 (無反向動畫等待)
@@ -1151,6 +1239,36 @@ git push</pre>
         isFlipped = false;
         void inner.offsetHeight;
         inner.style.transition = '';
+      }
+
+      if (filteredCards.length === 0) {
+        document.getElementById('fc-index').innerText = 0;
+        document.getElementById('fc-total').innerText = 0;
+        document.getElementById('fc-progress-bar').style.width = '0%';
+        
+        const langBadge = document.getElementById('fc-lang-badge');
+        langBadge.innerText = '🔍 查無相符卡牌';
+        langBadge.className = "px-2.5 py-1 text-xs rounded-md font-bold bg-slate-200 dark:bg-slate-800 text-slate-500 border border-slate-300 dark:border-slate-700 shadow-sm";
+        
+        document.getElementById('fc-type-badge').innerText = '-';
+        document.getElementById('fc-cat-badge').innerText = '-';
+        document.getElementById('fc-front-lang-hint').innerText = '[查無資料]';
+        
+        const frontEl = document.getElementById('fc-front-text');
+        frontEl.innerText = '未找到符合條件的詞彙卡牌
+請嘗試更換搜尋關鍵字或清除篩選';
+        frontEl.className = "field-en text-base sm:text-lg font-medium text-slate-500 dark:text-slate-400 text-center w-full whitespace-pre-line";
+        
+        document.getElementById('fc-back-lang-hint').innerText = '[查無資料]';
+        const backEl = document.getElementById('fc-back-text');
+        backEl.innerText = '查無釋義';
+        backEl.className = "field-zh text-base font-medium text-slate-400 text-center w-full";
+        
+        document.getElementById('fc-notes-container').classList.add('hidden');
+        const tagEl = document.getElementById('fc-mastery-tag');
+        tagEl.innerText = '⚪ 0 筆';
+        tagEl.className = 'text-slate-400 font-semibold';
+        return;
       }
 
       document.getElementById('fc-index').innerText = currentCardIndex + 1;
@@ -1897,11 +2015,275 @@ git push</pre>
       closeDrawer();
     }
 
+    function jumpFromDrawerToFlashcard() {
+      if (drawerActiveItem) {
+        jumpToCardInFlashcard(drawerActiveItem.id);
+      }
+    }
+
+    function jumpToCardInFlashcard(itemId) {
+      closeGlobalFind();
+      closeDrawer();
+      switchTab('flashcard');
+
+      const fcSearch = document.getElementById('fc-search');
+      if (fcSearch) {
+        fcSearch.value = '';
+        const clearBtn = document.getElementById('fc-search-clear');
+        if (clearBtn) clearBtn.classList.add('hidden');
+      }
+      const langSel = document.getElementById('fc-filter-lang');
+      if (langSel) langSel.value = 'all';
+      const catSel = document.getElementById('fc-filter-cat');
+      if (catSel) catSel.value = 'all';
+      const typeSel = document.getElementById('fc-filter-type');
+      if (typeSel) typeSel.value = 'all';
+      const masSel = document.getElementById('fc-filter-mastery');
+      if (masSel) masSel.value = 'all';
+
+      filteredCards = [...items];
+      const targetIdx = filteredCards.findIndex(c => c.id === itemId);
+      if (targetIdx !== -1) {
+        currentCardIndex = targetIdx;
+      } else {
+        currentCardIndex = 0;
+      }
+      updateFlashcardUI();
+
+      const cardSection = document.getElementById('view-flashcard');
+      if (cardSection) {
+        cardSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // ==========================================
+    // 全域快速查找系統 (Spotlight Find System)
+    // ==========================================
+    let globalFindResults = [];
+    let globalFindSelectedIndex = 0;
+
+    function openGlobalFind() {
+      const modal = document.getElementById('global-find-modal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      const input = document.getElementById('global-find-input');
+      if (input) {
+        input.value = '';
+        input.focus();
+        handleGlobalFindInput('');
+      }
+    }
+
+    function closeGlobalFind() {
+      const modal = document.getElementById('global-find-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function onGlobalFindBackdropClick(event) {
+      if (event.target.id === 'global-find-modal') {
+        closeGlobalFind();
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function highlightText(text, query) {
+      if (!text) return '';
+      const safe = escapeHtml(text);
+      if (!query) return safe;
+      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escapedQuery})`, 'gi');
+      return safe.replace(regex, '<mark class="bg-amber-300 dark:bg-amber-500/40 text-slate-900 dark:text-amber-200 px-0.5 rounded font-bold">$1</mark>');
+    }
+
+    function handleGlobalFindInput(val) {
+      const q = (val || '').toLowerCase().trim();
+      const countEl = document.getElementById('global-find-count');
+      const container = document.getElementById('global-find-results');
+      if (!container) return;
+
+      if (!q) {
+        globalFindResults = items.slice(0, 15);
+      } else {
+        globalFindResults = items.filter(item => {
+          const f = (item.front || '').toLowerCase();
+          const b = (item.back || '').toLowerCase();
+          const n = (item.notes || '').toLowerCase();
+          const c = (item.category || '').toLowerCase();
+          const l = (item.lang_badge || '').toLowerCase();
+          return f.includes(q) || b.includes(q) || n.includes(q) || c.includes(q) || l.includes(q);
+        }).slice(0, 30);
+      }
+
+      globalFindSelectedIndex = 0;
+      if (countEl) countEl.innerText = globalFindResults.length;
+
+      if (globalFindResults.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center text-slate-400 space-y-2">
+            <span class="text-3xl">🔍</span>
+            <p class="text-sm">未找到相符詞彙，請嘗試輸入其他關鍵字</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      globalFindResults.forEach((item, idx) => {
+        const isSelected = idx === globalFindSelectedIndex;
+        const masteryIcon = item.mastery === 'mastered' ? '🟢' : (item.mastery === 'unlearned' ? '🔴' : '🟡');
+        const badgeClass = item.is_french ? 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30' : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30';
+        
+        html += `
+          <div id="gf-item-${idx}" onclick="jumpToCardInFlashcard('${item.id}')" class="p-3 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 ${isSelected ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/50 shadow-sm' : 'bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/40 border-transparent hover:border-slate-200 dark:hover:border-slate-800'}">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span class="px-2 py-0.5 text-[11px] rounded font-bold border ${badgeClass}">
+                  ${escapeHtml(item.lang_badge)}
+                </span>
+                <span class="px-1.5 py-0.5 text-[10px] rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-semibold uppercase">
+                  ${escapeHtml(item.type)}
+                </span>
+                <span class="text-[11px] text-slate-400">
+                  ${escapeHtml(item.category)}
+                </span>
+                <span class="text-xs" title="掌握度">${masteryIcon}</span>
+              </div>
+              <div class="font-bold text-slate-900 dark:text-white text-sm truncate">
+                ${highlightText(item.front, q)}
+              </div>
+              <div class="text-xs text-emerald-700 dark:text-emerald-400 truncate mt-0.5">
+                ${highlightText(item.back, q)}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-center" onclick="event.stopPropagation()">
+              <button onclick="playAudio('${escapeHtml(item.front).replace(/'/g, "\\'")}', '${item.front_voice || 'en-US'}')" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-500/20 text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 text-xs transition" title="朗讀發音">
+                🔊
+              </button>
+              <button onclick="openDrawerFromFind('${item.id}')" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium transition" title="在清單中開啟詳細抽屜">
+                📋 詳細
+              </button>
+              <button onclick="jumpToCardInFlashcard('${item.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1 shadow-sm" title="在 3D 卡牌中練習">
+                <span>📇</span> 卡牌
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function navigateGlobalFind(step) {
+      if (globalFindResults.length === 0) return;
+      globalFindSelectedIndex = (globalFindSelectedIndex + step + globalFindResults.length) % globalFindResults.length;
+      updateGlobalFindSelection();
+    }
+
+    function updateGlobalFindSelection() {
+      globalFindResults.forEach((_, idx) => {
+        const el = document.getElementById('gf-item-' + idx);
+        if (!el) return;
+        if (idx === globalFindSelectedIndex) {
+          el.className = "p-3 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/50 shadow-sm";
+          el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        } else {
+          el.className = "p-3 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/40 border-transparent hover:border-slate-200 dark:hover:border-slate-800";
+        }
+      });
+    }
+
+    function selectGlobalFindCurrent() {
+      if (globalFindResults.length > 0 && globalFindResults[globalFindSelectedIndex]) {
+        jumpToCardInFlashcard(globalFindResults[globalFindSelectedIndex].id);
+      }
+    }
+
+    function openDrawerFromFind(itemId) {
+      closeGlobalFind();
+      const target = items.find(c => c.id === itemId);
+      if (target) {
+        switchTab('list');
+        setTimeout(() => {
+          openDrawer(target);
+        }, 60);
+      }
+    }
+
     // ==========================================
     // 快捷鍵監聽 (Keyboard Shortcuts)
     // ==========================================
     window.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+      // Ctrl+K 或 Cmd+K 全域喚起搜尋
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        const modal = document.getElementById('global-find-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          closeGlobalFind();
+        } else {
+          openGlobalFind();
+        }
+        return;
+      }
+
+      // Esc 關閉彈窗或側邊抽屜
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('global-find-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          e.preventDefault();
+          closeGlobalFind();
+          return;
+        }
+        const drawer = document.getElementById('detail-drawer');
+        if (drawer && !drawer.classList.contains('translate-x-full')) {
+          e.preventDefault();
+          closeDrawer();
+          return;
+        }
+      }
+
+      // 全域搜尋彈窗開啟時的鍵盤導航
+      const modal = document.getElementById('global-find-modal');
+      const isModalOpen = modal && !modal.classList.contains('hidden');
+      if (isModalOpen) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          navigateGlobalFind(1);
+          return;
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          navigateGlobalFind(-1);
+          return;
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          selectGlobalFindCurrent();
+          return;
+        }
+      }
+
+      // 若正在其他輸入框中輸入
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+        if (e.target.id === 'fc-search' && e.key === 'Escape') {
+          clearFlashcardSearch();
+          e.target.blur();
+        }
+        return;
+      }
+
+      // 非輸入狀態下按下 F 或 / 快速開啟全域查找
+      if (e.key.toLowerCase() === 'f' || e.key === '/') {
+        e.preventDefault();
+        openGlobalFind();
+        return;
+      }
 
       if (activeTab === 'flashcard') {
         if (e.code === 'Space') {

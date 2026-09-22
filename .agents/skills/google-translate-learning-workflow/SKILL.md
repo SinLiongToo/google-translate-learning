@@ -134,6 +134,8 @@ git push
 
 | 按鍵 | 功能說明 |
 | :--- | :--- |
+| <kbd>Ctrl</kbd>+<kbd>K</kbd> / <kbd>F</kbd> / <kbd>/</kbd> | 開啟全域智慧搜尋查找 (Global Find) 彈窗 |
+| <kbd>Esc</kbd> | 關閉全域搜尋彈窗 / 側邊詳細資訊抽屜 |
 | <kbd>Space</kbd> | 3D 翻轉卡牌正面 / 背面 |
 | <kbd>←</kbd> / <kbd>→</kbd> | 切換至上一張 / 下一張卡片 |
 | <kbd>P</kbd> | 播放當前卡面之母語語音 |
