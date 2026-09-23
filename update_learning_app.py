@@ -3167,6 +3167,21 @@ git push
         f.write(content)
     print(f"📝 說明文件已生成: {README_OUTPUT.name}")
 
+def run_quality_audit():
+    """執行自動化品質審查與 Node.js 執行期互動測試"""
+    test_script = WORKSPACE_DIR / "test_app.js"
+    if test_script.exists():
+        print("\n🧪 正在執行自動化品質審查 (Automated Quality Audit)...")
+        import subprocess
+        res = subprocess.run(["node", str(test_script)], cwd=str(WORKSPACE_DIR), capture_output=True, text=True, encoding='utf-8')
+        if res.stdout:
+            print(res.stdout)
+        if res.returncode != 0:
+            if res.stderr:
+                print(res.stderr)
+            raise RuntimeError("❌ 自動化品質審查未通過！建置已被安全攔截，請修復 JavaScript 語法或邏輯錯誤。")
+        print("✅ 自動化品質審查 100% 通過！\n")
+
 def main():
     print("=" * 60)
     print("🚀 啟動 Google 翻譯多語互動學習工作流 (G-Translate Learning)")
@@ -3183,6 +3198,7 @@ def main():
     
     generate_markdown_handbook(items)
     generate_interactive_html(items)
+    run_quality_audit()
     generate_skill_md()
     generate_readme(items)
     
