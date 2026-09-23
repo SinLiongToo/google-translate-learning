@@ -1360,7 +1360,7 @@ git push</pre>
   <!-- ======================================================== -->
   <!-- 全域快速查找彈窗 (Spotlight Find Modal) -->
   <!-- ======================================================== -->
-  <div id="global-find-modal" class="fixed inset-0 z-50 hidden flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-slate-950/60 backdrop-blur-sm transition-all" onclick="onGlobalFindBackdropClick(event)">
+  <div id="global-find-modal" style="display: none;" class="fixed inset-0 z-50 items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-slate-950/60 backdrop-blur-sm transition-all" onclick="onGlobalFindBackdropClick(event)">
     <div class="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[82vh]" onclick="event.stopPropagation()">
       <!-- 搜尋標頭 -->
       <div class="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3 bg-slate-50/50 dark:bg-slate-900/50">
@@ -1667,7 +1667,7 @@ git push</pre>
         document.getElementById('fc-front-lang-hint').innerText = '[查無資料]';
         
         const frontEl = document.getElementById('fc-front-text');
-        frontEl.innerText = '未找到符合條件的詞彙卡牌\n請嘗試更換搜尋關鍵字或清除篩選';
+        frontEl.innerText = '未找到符合條件的詞彙卡牌 (請嘗試更換搜尋關鍵字或清除篩選)';
         frontEl.className = "field-en text-base sm:text-lg font-medium text-slate-500 dark:text-slate-400 text-center w-full whitespace-pre-line";
         
         document.getElementById('fc-back-lang-hint').innerText = '[查無資料]';
@@ -2476,7 +2476,7 @@ git push</pre>
     function openGlobalFind() {{
       const modal = document.getElementById('global-find-modal');
       if (!modal) return;
-      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
       const input = document.getElementById('global-find-input');
       if (input) {{
         input.value = '';
@@ -2487,7 +2487,9 @@ git push</pre>
 
     function closeGlobalFind() {{
       const modal = document.getElementById('global-find-modal');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {{
+        modal.style.display = 'none';
+      }}
     }}
 
     function onGlobalFindBackdropClick(event) {{
@@ -2637,7 +2639,7 @@ git push</pre>
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {{
         e.preventDefault();
         const modal = document.getElementById('global-find-modal');
-        if (modal && !modal.classList.contains('hidden')) {{
+        if (modal && modal.style.display !== 'none') {{
           closeGlobalFind();
         }} else {{
           openGlobalFind();
@@ -2648,7 +2650,7 @@ git push</pre>
       // Esc 關閉彈窗或側邊抽屜
       if (e.key === 'Escape') {{
         const modal = document.getElementById('global-find-modal');
-        if (modal && !modal.classList.contains('hidden')) {{
+        if (modal && modal.style.display !== 'none') {{
           e.preventDefault();
           closeGlobalFind();
           return;
@@ -2663,7 +2665,7 @@ git push</pre>
 
       // 全域搜尋彈窗開啟時的鍵盤導航
       const modal = document.getElementById('global-find-modal');
-      const isModalOpen = modal && !modal.classList.contains('hidden');
+      const isModalOpen = modal && modal.style.display !== 'none';
       if (isModalOpen) {{
         if (e.key === 'ArrowDown') {{
           e.preventDefault();
