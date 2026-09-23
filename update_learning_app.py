@@ -720,83 +720,94 @@ def generate_interactive_html(items):
         <div id="fc-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300" style="width: 1%;"></div>
       </div>
 
-      <!-- 3D 翻轉卡片本體 (自適應高寬與捲動保護) -->
-      <div class="max-w-2xl mx-auto min-h-[400px] h-[430px] sm:h-[410px] perspective-1000 cursor-pointer select-none" onclick="flipCard()">
-        <div id="card-inner" class="relative w-full h-full transform-style-3d shadow-xl rounded-2xl">
-          
-          <!-- 卡牌正面 (原文面) -->
-          <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/60 shadow-lg overflow-hidden">
-            <div class="flex items-center justify-between shrink-0">
-              <div class="flex items-center gap-2 field-tag">
-                <!-- 語言對標籤 (清晰辨別法語/英語) -->
-                <span id="fc-lang-badge" class="px-2.5 py-1 text-xs rounded-md font-bold border shadow-sm">
-                  🇫🇷 法文 ➔ 🇬🇧 英文
-                </span>
-                <span id="fc-type-badge" class="px-2 py-0.5 text-[11px] rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 uppercase font-semibold">
-                  Phrase
-                </span>
-                <span id="fc-cat-badge" class="px-2 py-0.5 text-[11px] rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                  實用表達
-                </span>
+      <!-- 3D 翻轉卡片本體 (自適應高寬、捲動保護與兩側懸浮導航) -->
+      <div class="relative max-w-2xl mx-auto">
+        <!-- 左右兩側懸浮導航按鈕 (桌面/大螢幕直覺點選) -->
+        <button type="button" onclick="event.stopPropagation(); prevCard()" class="hidden md:flex absolute -left-5 lg:-left-12 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white dark:bg-slate-800/90 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-xl text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white items-center justify-center hover:scale-110 active:scale-95 transition z-20 cursor-pointer" title="上一張 (快捷鍵: ←)">
+          <span class="text-sm font-bold select-none">❮</span>
+        </button>
+
+        <div id="flashcard-box" class="w-full min-h-[400px] h-[430px] sm:h-[410px] perspective-1000 cursor-pointer select-none" onclick="flipCard()">
+          <div id="card-inner" class="relative w-full h-full transform-style-3d shadow-xl rounded-2xl">
+            
+            <!-- 卡牌正面 (原文面) -->
+            <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden bg-white dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/60 shadow-lg overflow-hidden">
+              <div class="flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2 field-tag">
+                  <!-- 語言對標籤 (清晰辨別法語/英語) -->
+                  <span id="fc-lang-badge" class="px-2.5 py-1 text-xs rounded-md font-bold border shadow-sm">
+                    🇫🇷 法文 ➔ 🇬🇧 英文
+                  </span>
+                  <span id="fc-type-badge" class="px-2 py-0.5 text-[11px] rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 uppercase font-semibold">
+                    Phrase
+                  </span>
+                  <span id="fc-cat-badge" class="px-2 py-0.5 text-[11px] rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                    實用表達
+                  </span>
+                </div>
+                <button type="button" onclick="event.stopPropagation(); playFrontAudio()" class="w-10 h-10 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition shadow-sm cursor-pointer" title="朗讀正面母語發音 (快捷鍵: P)">
+                  🔊
+                </button>
               </div>
-              <button onclick="event.stopPropagation(); playFrontAudio()" class="w-10 h-10 rounded-full bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition shadow-sm" title="朗讀正面母語發音 (快捷鍵: P)">
-                🔊
-              </button>
+
+              <!-- 正面文字內容：自適應滾動保護與動態字級 -->
+              <div class="my-auto px-2 overflow-y-auto max-h-[250px] w-full flex flex-col items-center justify-center">
+                <div id="fc-front-lang-hint" class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 shrink-0">
+                  [🇫🇷 法文原文]
+                </div>
+                <div class="w-full flex justify-center">
+                  <h2 id="fc-front-text" class="field-en tracking-tight break-words whitespace-pre-line transition-all">
+                    donner de la confiture aux cochons
+                  </h2>
+                </div>
+                <div id="fc-hint" class="text-xs text-slate-400 mt-3 shrink-0">
+                  （點擊卡牌或按空格鍵翻轉查看釋義）
+                </div>
+              </div>
+
+              <!-- 底部提示 -->
+              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3 shrink-0">
+                <span>快捷鍵：Space 翻牌 | ← → 切換卡片</span>
+                <span id="fc-mastery-tag" class="text-amber-500 dark:text-amber-400 font-semibold">🟡 學習中</span>
+              </div>
             </div>
 
-            <!-- 正面文字內容：自適應滾動保護與動態字級 -->
-            <div class="my-auto px-2 overflow-y-auto max-h-[250px] w-full flex flex-col items-center justify-center">
-              <div id="fc-front-lang-hint" class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2 shrink-0">
-                [🇫🇷 法文原文]
+            <!-- 卡牌背面 (釋義與說明面) -->
+            <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-900/95 border border-emerald-500/40 shadow-lg overflow-hidden">
+              <div class="flex items-center justify-between shrink-0">
+                <span id="fc-back-lang-hint" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                  [🇬🇧 英文釋義]
+                </span>
+                <button type="button" onclick="event.stopPropagation(); playBackAudio()" class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition cursor-pointer" title="朗讀背面發音">
+                  🔊
+                </button>
               </div>
-              <div class="w-full flex justify-center">
-                <h2 id="fc-front-text" class="field-en tracking-tight break-words whitespace-pre-line transition-all">
-                  donner de la confiture aux cochons
-                </h2>
+
+              <!-- 背面中文/英文/法文釋義與例句內容 -->
+              <div class="my-auto px-2 overflow-y-auto max-h-[250px] w-full">
+                <div class="w-full flex justify-center">
+                  <h3 id="fc-back-text" class="field-zh text-emerald-700 dark:text-emerald-300 leading-relaxed break-words whitespace-pre-line transition-all">
+                    give jam to the pigs.
+                  </h3>
+                </div>
+                <div id="fc-notes-container" class="field-notes mt-3 p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 text-xs text-slate-700 dark:text-slate-300 shadow-sm text-left">
+                  <p id="fc-notes" class="leading-relaxed whitespace-pre-line">
+                    備註與例句解析
+                  </p>
+                </div>
               </div>
-              <div id="fc-hint" class="text-xs text-slate-400 mt-3 shrink-0">
-                （點擊卡牌或按空格鍵翻轉查看釋義）
+
+              <div class="text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3 shrink-0">
+                點擊再次翻轉回正面
               </div>
             </div>
 
-            <!-- 底部提示 -->
-            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3 shrink-0">
-              <span>快捷鍵：Space 翻牌 | ← → 切換卡片</span>
-              <span id="fc-mastery-tag" class="text-amber-500 dark:text-amber-400 font-semibold">🟡 學習中</span>
-            </div>
           </div>
-
-          <!-- 卡牌背面 (釋義與說明面) -->
-          <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden rotate-y-180 bg-slate-50 dark:bg-slate-900/95 border border-emerald-500/40 shadow-lg overflow-hidden">
-            <div class="flex items-center justify-between shrink-0">
-              <span id="fc-back-lang-hint" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                [🇬🇧 英文釋義]
-              </span>
-              <button onclick="event.stopPropagation(); playBackAudio()" class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition" title="朗讀背面發音">
-                🔊
-              </button>
-            </div>
-
-            <!-- 背面中文/英文/法文釋義與例句內容 -->
-            <div class="my-auto px-2 overflow-y-auto max-h-[250px] w-full">
-              <div class="w-full flex justify-center">
-                <h3 id="fc-back-text" class="field-zh text-emerald-700 dark:text-emerald-300 leading-relaxed break-words whitespace-pre-line transition-all">
-                  give jam to the pigs.
-                </h3>
-              </div>
-              <div id="fc-notes-container" class="field-notes mt-3 p-3 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/50 text-xs text-slate-700 dark:text-slate-300 shadow-sm text-left">
-                <p id="fc-notes" class="leading-relaxed whitespace-pre-line">
-                  備註與例句解析
-                </p>
-              </div>
-            </div>
-
-            <div class="text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3 shrink-0">
-              點擊再次翻轉回正面
-            </div>
-          </div>
-
         </div>
+
+        <button type="button" onclick="event.stopPropagation(); nextCard()" class="hidden md:flex absolute -right-5 lg:-right-12 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white dark:bg-slate-800/90 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-lg text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white items-center justify-center hover:scale-110 active:scale-95 transition z-20 cursor-pointer" title="下一張 (快捷鍵: →)">
+          <span class="text-sm font-bold select-none">❯</span>
+        </button>
       </div>
 
       <!-- 下方控制按鈕區 (手機版響應式人體工學排版) -->
@@ -816,8 +827,8 @@ def generate_interactive_html(items):
 
         <!-- 導航切換、播報模式與自動播放控制列 -->
         <div class="flex flex-wrap items-center justify-between gap-2.5">
-          <button onclick="prevCard()" class="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-medium border border-slate-300 dark:border-slate-700 transition flex items-center justify-center gap-1.5">
-            <span>←</span> 上一張
+          <button type="button" onclick="prevCard()" class="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-medium border border-slate-300 dark:border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 select-none" title="上一張 (快捷鍵: ←)">
+            <span class="text-base leading-none">←</span> 上一張
           </button>
 
           <!-- 播放模式切換：雙語模式 vs 英文模式 -->
@@ -829,11 +840,11 @@ def generate_interactive_html(items):
             </select>
           </div>
 
-          <button onclick="nextCard()" class="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-1.5">
-            下一張 <span>→</span>
+          <button type="button" onclick="nextCard()" class="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 select-none" title="下一張 (快捷鍵: →)">
+            下一張 <span class="text-base leading-none">→</span>
           </button>
 
-          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-1.5" title="自動巡迴播放：依據選擇模式自動朗讀與切換 (快捷鍵: A)">
+          <button type="button" id="btn-autoplay" onclick="toggleAutoPlay()" class="w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 select-none" title="自動巡迴播放：依據選擇模式自動朗讀與切換 (快捷鍵: A)">
             <span id="autoplay-icon">▶</span>
             <span id="autoplay-text">自動播放</span>
           </button>
@@ -1750,6 +1761,13 @@ git push</pre>
         return;
       }}
 
+      // 確保 currentCardIndex 落在有效範圍內
+      if (currentCardIndex < 0) currentCardIndex = 0;
+      if (currentCardIndex >= filteredCards.length) currentCardIndex = filteredCards.length - 1;
+
+      const card = filteredCards[currentCardIndex];
+      if (!card) return;
+
       document.getElementById('fc-index').innerText = currentCardIndex + 1;
       document.getElementById('fc-total').innerText = filteredCards.length;
       
@@ -1828,6 +1846,7 @@ git push</pre>
     }}
 
     function prevCard() {{
+      if (filteredCards.length === 0) return;
       if (currentCardIndex > 0) {{
         currentCardIndex--;
       }} else {{
@@ -1836,12 +1855,15 @@ git push</pre>
       updateFlashcardUI();
       if (isAutoPlaying) {{
         if (autoPlayTimer) clearTimeout(autoPlayTimer);
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if ('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {{
+          window.speechSynthesis.cancel();
+        }}
         autoPlayTimer = setTimeout(runAutoPlayStep, 350);
       }}
     }}
 
     function nextCard() {{
+      if (filteredCards.length === 0) return;
       if (currentCardIndex < filteredCards.length - 1) {{
         currentCardIndex++;
       }} else {{
@@ -1850,7 +1872,9 @@ git push</pre>
       updateFlashcardUI();
       if (isAutoPlaying) {{
         if (autoPlayTimer) clearTimeout(autoPlayTimer);
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if ('speechSynthesis' in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {{
+          window.speechSynthesis.cancel();
+        }}
         autoPlayTimer = setTimeout(runAutoPlayStep, 350);
       }}
     }}
@@ -2800,13 +2824,42 @@ git push</pre>
       }}
     }});
 
-    // 初始化啟動
+    // 初始化啟動與觸控手勢
     window.addEventListener('DOMContentLoaded', () => {{
       initTheme();
       applyDisplayPrefs();
       updateFlashcardUI();
       const sel = document.getElementById('autoplay-mode-select');
       if (sel) sel.value = autoPlayMode;
+
+      // 手機觸控滑動支援 (Swipe Left = 下一張, Swipe Right = 上一張)
+      const cardBox = document.getElementById('flashcard-box');
+      if (cardBox) {{
+        let touchStartX = 0;
+        let touchStartY = 0;
+        cardBox.addEventListener('touchstart', (e) => {{
+          if (e.touches && e.touches[0]) {{
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+          }}
+        }}, {{ passive: true }});
+        cardBox.addEventListener('touchend', (e) => {{
+          if (e.changedTouches && e.changedTouches[0]) {{
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            // 確保水平滑動幅度明顯大於垂直捲動
+            if (Math.abs(diffX) > 48 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {{
+              if (diffX < 0) {{
+                nextCard();
+              }} else {{
+                prevCard();
+              }}
+            }}
+          }}
+        }}, {{ passive: true }});
+      }}
     }});
   </script>
 </body>
