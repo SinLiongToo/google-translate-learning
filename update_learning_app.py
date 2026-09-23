@@ -824,8 +824,8 @@ def generate_interactive_html(items):
           <div class="flex items-center text-xs bg-slate-200/80 dark:bg-slate-800/80 rounded-xl p-1 border border-slate-300 dark:border-slate-700/60 shadow-inner order-last sm:order-none w-full sm:w-auto justify-center">
             <span class="pl-2 pr-1 text-slate-500 dark:text-slate-400 font-medium">播報:</span>
             <select id="autoplay-mode-select" onchange="setAutoPlayMode(this.value)" class="bg-transparent text-slate-700 dark:text-slate-200 font-bold focus:outline-none cursor-pointer py-1.5 pr-2">
-              <option value="bilingual">🌐 雙語模式 (外語+中文)</option>
-              <option value="foreign_only">🔤 英文/純外語模式</option>
+              <option value="bilingual">🌐 雙語模式 (正面外語 ➔ 翻牌 ➔ 背面釋義)</option>
+              <option value="foreign_only">🔤 英文/純外語模式 (僅朗讀外語不翻牌)</option>
             </select>
           </div>
 
@@ -838,6 +838,12 @@ def generate_interactive_html(items):
             <span id="autoplay-text">自動播放</span>
           </button>
         </div>
+      </div>
+
+      <!-- 自動播放即時狀態提示條 -->
+      <div id="autoplay-status-bar" class="hidden max-w-2xl mx-auto p-2.5 px-4 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-xs text-center font-medium flex items-center justify-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
+        <span id="autoplay-status-text">🔊 自動播放巡航中...</span>
       </div>
 
       <!-- 3D 卡牌下方更新時間提示 -->
@@ -1503,31 +1509,82 @@ git push</pre>
 
     // ==========================================
     // Web Speech API 真人多語發音 (支援法語 fr-FR、英語 en-US、中文 zh-TW)
+    // 包含 V8 垃圾回收防銷毀保護與狀態監聽看門狗
     // ==========================================
+    let audioWatchdogTimer = null;
+
     function playAudio(text, lang = 'en-US', onEnd = null) {{
       if (!('speechSynthesis' in window)) {{
-        if (onEnd) setTimeout(onEnd, 1200);
+        if (onEnd) setTimeout(onEnd, 1000);
         return;
       }}
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang;
-      utterance.rate = ttsRate;
-      if (onEnd) {{
-        let called = false;
-        const callbackOnce = () => {{
-          if (!called) {{
-            called = true;
-            onEnd();
-          }}
-        }};
-        utterance.onend = callbackOnce;
-        utterance.onerror = callbackOnce;
-        // 防呆看門狗計時器，避免特定瀏覽器丟失 onend 事件卡住
-        const timeoutMs = Math.max(3000, (text.length * 150) / ttsRate);
-        setTimeout(callbackOnce, timeoutMs);
+
+      // 清除先前的看門狗計時器
+      if (audioWatchdogTimer) {{
+        clearTimeout(audioWatchdogTimer);
+        audioWatchdogTimer = null;
       }}
-      window.speechSynthesis.speak(utterance);
+
+      // 避免空字串卡住
+      if (!text || !text.trim()) {{
+        if (onEnd) setTimeout(onEnd, 300);
+        return;
+      }}
+
+      // 清理文本中的 Markdown 符號與多餘空白，避免語音引擎讀出星號或卡死
+      const cleanText = text.replace(/[*_#`~[\\]]/g, ' ').replace(/\\s+/g, ' ').trim();
+      if (!cleanText) {{
+        if (onEnd) setTimeout(onEnd, 300);
+        return;
+      }}
+
+      // 喚醒可能的瀏覽器休眠卡頓 (Chrome 著名 bug)
+      try {{
+        if (window.speechSynthesis.paused) {{
+          window.speechSynthesis.resume();
+        }}
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {{
+          window.speechSynthesis.cancel();
+        }}
+      }} catch (e) {{}}
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = lang || 'en-US';
+      utterance.rate = ttsRate || 1.0;
+
+      // 👑 關鍵核心：掛載至 window 全域變數，防止 V8 垃圾回收機制 (GC) 提前銷毀物件導致中斷或丟失 onend
+      window._gt_active_utterance = utterance;
+
+      let isFinished = false;
+      const finishCallback = () => {{
+        if (isFinished) return;
+        isFinished = true;
+        if (audioWatchdogTimer) {{
+          clearTimeout(audioWatchdogTimer);
+          audioWatchdogTimer = null;
+        }}
+        window._gt_active_utterance = null;
+        if (onEnd) onEnd();
+      }};
+
+      utterance.onend = finishCallback;
+      utterance.onerror = (err) => {{
+        // 遇到錯誤或被取消時仍確保安全回調，不阻斷後續翻牌循環
+        finishCallback();
+      }};
+
+      // 👑 智能看門狗計時器：以標準語速計算時間，超時立即強制推進，絕不卡死
+      const safeTimeoutMs = Math.min(8000, Math.max(1600, (cleanText.length * 85) / (ttsRate || 1.0) + 1200));
+      audioWatchdogTimer = setTimeout(finishCallback, safeTimeoutMs);
+
+      // 延遲 40ms 發音，確保 cancel() 異步執行結束
+      setTimeout(() => {{
+        try {{
+          window.speechSynthesis.speak(utterance);
+        }} catch (err) {{
+          finishCallback();
+        }}
+      }}, 40);
     }}
 
     function updateTtsRate(rate) {{
@@ -1630,28 +1687,39 @@ git push</pre>
       updateFlashcardUI();
     }}
 
-    function flipCard() {{
+    function setCardFlipped(flipped, animate = true) {{
       if (filteredCards.length === 0) return;
       const inner = document.getElementById('card-inner');
-      isFlipped = !isFlipped;
+      if (!inner) return;
+      isFlipped = !!flipped;
+
+      if (!animate) {{
+        inner.style.transition = 'none';
+      }} else {{
+        inner.style.transition = 'transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      }}
+
       if (isFlipped) {{
+        inner.style.transform = 'rotateY(180deg)';
         inner.classList.add('rotate-y-180');
       }} else {{
+        inner.style.transform = 'rotateY(0deg)';
         inner.classList.remove('rotate-y-180');
       }}
-    }}
 
-    function updateFlashcardUI() {{
-      const inner = document.getElementById('card-inner');
-      
-      // 切換卡片時瞬間重設為正面 (無反向動畫等待)
-      if (isFlipped) {{
-        inner.style.transition = 'none';
-        inner.classList.remove('rotate-y-180');
-        isFlipped = false;
+      if (!animate) {{
         void inner.offsetHeight;
         inner.style.transition = '';
       }}
+    }}
+
+    function flipCard() {{
+      setCardFlipped(!isFlipped, true);
+    }}
+
+    function updateFlashcardUI() {{
+      // 切換卡片時瞬間重設為正面 (無反向動畫等待)
+      setCardFlipped(false, false);
 
       if (filteredCards.length === 0) {{
         document.getElementById('fc-index').innerText = 0;
@@ -1832,16 +1900,36 @@ git push</pre>
       runAutoPlayStep();
     }}
 
+    function updateAutoPlayStatus(msg) {{
+      const bar = document.getElementById('autoplay-status-bar');
+      const txt = document.getElementById('autoplay-status-text');
+      if (!bar || !txt) return;
+      if (msg && isAutoPlaying) {{
+        txt.innerText = msg;
+        bar.classList.remove('hidden');
+      }} else {{
+        bar.classList.add('hidden');
+      }}
+    }}
+
     function stopAutoPlay() {{
       isAutoPlaying = false;
       if (autoPlayTimer) {{
         clearTimeout(autoPlayTimer);
         autoPlayTimer = null;
       }}
-      if ('speechSynthesis' in window) {{
-        window.speechSynthesis.cancel();
+      if (audioWatchdogTimer) {{
+        clearTimeout(audioWatchdogTimer);
+        audioWatchdogTimer = null;
       }}
+      try {{
+        if ('speechSynthesis' in window) {{
+          window.speechSynthesis.cancel();
+        }}
+      }} catch (e) {{}}
+      window._gt_active_utterance = null;
       updateAutoPlayButtonUI(false);
+      updateAutoPlayStatus(null);
     }}
 
     function updateAutoPlayButtonUI(playing) {{
@@ -1862,92 +1950,84 @@ git push</pre>
 
     function runAutoPlayStep() {{
       if (!isAutoPlaying) return;
+      if (autoPlayTimer) {{
+        clearTimeout(autoPlayTimer);
+        autoPlayTimer = null;
+      }}
+
       const card = filteredCards[currentCardIndex];
       if (!card) {{
         stopAutoPlay();
         return;
       }}
 
-      // 1. 若卡牌處於翻面狀態，先平滑翻回正面
-      if (isFlipped) {{
-        flipCard();
-      }}
+      // 1. 確保卡牌在正面狀態
+      setCardFlipped(false, false);
 
-      // 稍微給 200ms 等待卡牌翻正後發音
-      autoPlayTimer = setTimeout(() => {{
+      // 2. 朗讀正面文字（母語口音）
+      const frontLangName = card.front_lang || "外語";
+      updateAutoPlayStatus("🔊 正在朗讀原文 (" + frontLangName + ")...");
+
+      playAudio(card.front, card.front_voice || 'en-US', () => {{
         if (!isAutoPlaying) return;
 
-        // 2. 朗讀正面文字（法文/英文原生口音）
-        playAudio(card.front, card.front_voice || 'en-US', () => {{
-          if (!isAutoPlaying) return;
+        if (autoPlayMode === 'foreign_only') {{
+          // 純外語模式：正面朗讀完畢後停留 2.0 秒吸收，直接前往下一張
+          updateAutoPlayStatus("⏳ 思考吸收中...");
+          autoPlayTimer = setTimeout(() => {{
+            if (!isAutoPlaying) return;
+            advanceAutoPlayCard();
+          }}, 2000);
+        }} else {{
+          // 雙語模式（預設）：
+          // 3. 正面朗讀結束後，停留 1.2 秒讓學習者回想
+          updateAutoPlayStatus("🤔 回想中文釋義...");
+          autoPlayTimer = setTimeout(() => {{
+            if (!isAutoPlaying) return;
 
-          if (autoPlayMode === 'foreign_only') {{
-            // ==========================================
-            // 純英文 / 純外語模式：專注沉浸外語聽力
-            // 朗讀完正面後停留 2.0 秒吸收，直接切換至下一張
-            // ==========================================
+            // 4. 自動 3D 翻轉至背面
+            updateAutoPlayStatus("🔄 翻轉查看釋義...");
+            setCardFlipped(true, true);
+
+            // 等待翻轉動畫 380ms 完成後朗讀背面釋義
             autoPlayTimer = setTimeout(() => {{
               if (!isAutoPlaying) return;
 
-              if (currentCardIndex < filteredCards.length - 1) {{
-                currentCardIndex++;
-              }} else {{
-                currentCardIndex = 0; // 循環播放
-              }}
-              updateFlashcardUI();
-
-              autoPlayTimer = setTimeout(() => {{
-                runAutoPlayStep();
-              }}, 450);
-
-            }}, 2000);
-
-          }} else {{
-            // ==========================================
-            // 雙語模式：正面外語 ➔ 翻牌 ➔ 背面中文釋義
-            // ==========================================
-            // 正面朗讀結束後，停留 1.6 秒讓學習者在心中回想中文
-            autoPlayTimer = setTimeout(() => {{
-              if (!isAutoPlaying) return;
-
-              // 自動翻轉至背面
-              if (!isFlipped) {{
-                flipCard();
-              }}
-
-              // 等待 300ms 翻轉動畫完成後朗讀背面釋義
-              autoPlayTimer = setTimeout(() => {{
+              // 5. 朗讀背面釋義
+              const backLangName = card.back_lang || "中文";
+              updateAutoPlayStatus("🔊 朗讀釋義 (" + backLangName + ")...");
+              playAudio(card.back, card.back_voice || 'zh-TW', () => {{
                 if (!isAutoPlaying) return;
 
-                playAudio(card.back, card.back_voice || 'zh-TW', () => {{
+                // 6. 背面朗讀完畢後，停留 1.8 秒吸收理解
+                updateAutoPlayStatus("✨ 記憶吸收中...");
+                autoPlayTimer = setTimeout(() => {{
                   if (!isAutoPlaying) return;
+                  advanceAutoPlayCard();
+                }}, 1800);
+              }});
 
-                  // 背面朗讀結束後，停留 2.0 秒讓學習者消化
-                  autoPlayTimer = setTimeout(() => {{
-                    if (!isAutoPlaying) return;
+            }}, 380);
 
-                    if (currentCardIndex < filteredCards.length - 1) {{
-                      currentCardIndex++;
-                    }} else {{
-                      currentCardIndex = 0; // 循環播放
-                    }}
-                    updateFlashcardUI();
+          }}, 1200);
+        }}
+      }});
+    }}
 
-                    // 延遲 400ms 等待切換過渡後開始下一張
-                    autoPlayTimer = setTimeout(() => {{
-                      runAutoPlayStep();
-                    }}, 400);
+    function advanceAutoPlayCard() {{
+      if (!isAutoPlaying) return;
+      if (currentCardIndex < filteredCards.length - 1) {{
+        currentCardIndex++;
+      }} else {{
+        currentCardIndex = 0; // 循環播放
+      }}
+      updateFlashcardUI();
+      setCardFlipped(false, false);
 
-                  }}, 2000);
-                }});
-
-              }}, 300);
-
-            }}, 1600);
-          }}
-        }});
-
-      }}, 200);
+      updateAutoPlayStatus("➡️ 前往下一張...");
+      autoPlayTimer = setTimeout(() => {{
+        runAutoPlayStep();
+      }}, 300);
     }}
 
     // ==========================================
